@@ -1,0 +1,150 @@
+/* --- THIS IS WHERE THE SEPARATED CSS CODE STARTS --- */
+
+/* Basic CSS Variables for theme (Copied from dashboard) */
+:root {
+    --primary-color: #008080; /* Teal - Adjust if your brand uses a different color */
+    --secondary-color: #f4f7f6; /* Light grey */
+    --text-color: #333; /* Dark grey */
+    --border-color: #ddd; /* Light grey border */
+    --shadow-color: rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+
+    /* Spacing variables (Copied from dashboard) */
+    --spacing-small: 8px;
+    --spacing-medium: 16px;
+    --spacing-large: 24px;
+    --spacing-x-large: 32px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    color: var(--text-color);
+
+    /* --- Light Blue Background Color --- */
+    background-color: #e0f7fa; /* A light cyan/blue shade */
+
+    /* --- Removed Background Image Styles --- */
+    /*
+    background-image: url('your-background-image.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    */
+}
+
+.login-container {
+    background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white background */
+    padding: var(--spacing-x-large); /* More padding all around */
+    border-radius: 10px; /* More rounded corners */
+    box-shadow: 0 10px 25px var(--shadow-color); /* Stronger, more diffused shadow */
+    width: 100%;
+    max-width: 500px; /* Increased max-width to make the container bigger */
+    text-align: center; /* Center text elements */
+    /* backdrop-filter: blur(5px); /* Optional: Remove or adjust if not needed with solid background */
+}
+
+/* Style for the logo image */
+.login-container .logo {
+    max-width: 200px; /* Slightly larger logo to match the bigger container */
+    height: auto;
+    margin-bottom: var(--spacing-large);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Logo styling */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: var(--spacing-small);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #555; /* Slightly darker label color */
+    text-align: left;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: var(--spacing-medium);
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(0, 128, 128, 0.3);
+}
+
+/* Style for the button container to space them out */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-medium);
+    margin-top: var(--spacing-medium);
+}
+
+.login-form button {
+    flex-grow: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.login-form button:hover {
+    background-color: #006666;
+}
+
+ .login-form button:active {
+     transform: scale(0.98);
+ }
+
+ .login-form button:focus {
+     outline: 2px solid rgba(0, 128, 128, 0.5);
+     outline-offset: 2px;
+ }
+
+/* Optional: Add a link for password reset or signup */
+.login-footer {
+    margin-top: var(--spacing-large);
+    font-size: 0.9em;
+}
+
+.login-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+/* --- THIS IS WHERE THE SEPARATED CSS CODE ENDS --- */

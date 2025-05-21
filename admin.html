@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pooch Purrfect Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css" />
+  <!-- Add Supabase client library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- CSS is now in style.css -->
+  <style>
+    .customer-info {
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+    .customer-info div {
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="sidebar" role="navigation" aria-label="Main Navigation">
+    <img src="logo.png" class="logo" alt="Pooch Purrfect Logo">
+    <div class="nav-item active" data-section="dashboard" tabindex="0" role="button" aria-pressed="true"
+      aria-label="Dashboard Overview">Dashboard</div>
+    <div class="nav-item" data-section="profile" tabindex="0" role="button" aria-pressed="false"
+      aria-label="Profile">Profile</div>
+    <div class="nav-item" data-section="sales" tabindex="0" role="button" aria-pressed="false"
+      aria-label="Sales Overview">Sales</div>
+    <div class="nav-item" data-section="inventory" tabindex="0" role="button" aria-pressed="false"
+      aria-label="Inventory Management">Inventory Management</div>
+    <div class="nav-item" data-section="records" tabindex="0" role="button" aria-pressed="false"
+      aria-label="Record Management">Record Management</div>
+    <div class="nav-item logout-item" id="logoutBtn" tabindex="0" role="button" aria-label="Log out">Log Out</div>
+  </nav>
+
+  <main class="main-content" role="main" tabindex="0">
+    <!-- Dashboard -->
+    <section id="dashboard" class="section active-section" aria-live="polite">
+      <h1 class="section-title">Dashboard</h1>
+      <div class="dashboard-overview">
+        <div class="overview-card">
+          <h3>Total Sales</h3>
+          <p id="dashboardTotalSales">₱0.00</p>
+        </div>
+        <div class="overview-card">
+          <h3>Appointments Today</h3>
+          <p id="dashboardApptsToday">0</p>
+        </div>
+        <div class="overview-card">
+          <h3>Revenue This Month</h3>
+          <p id="dashboardRevenueMonth">₱0.00</p>
+        </div>
+        <div class="overview-card">
+          <h3>Low Stock Items</h3>
+          <p id="dashboardLowStock">0</p>
+        </div>
+
+      </div>
+
+      <div class="recent-activity">
+        <h2>Recent Activity</h2>
+        <table class="activity-table" aria-describedby="activityTableDesc">
+          <caption id="activityTableDesc" class="visually-hidden">Recent System Activity</caption>
+          <thead>
+            <tr>
+              <th>Activity Type</th>
+              <th>Details</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="activityTableBody">
+            <!-- Dynamic recent activity rows -->
+            <tr>
+              <td colspan="3" class="centered-text">No recent activity.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Appointment Management -->
+    <section id="appointments" class="section" aria-live="polite" hidden>
+      <h1 class="section-title">Appointments</h1>
+
+      <!-- Removed the appointment form from here -->
+
+      <table aria-describedby="apptTableDesc">
+        <caption id="apptTableDesc">List of Appointments</caption>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Pet</th>
+            <th>Service</th>
+            <th>Date & Time</th>
+            <th>Status</th>
+             <th>Price</th> <!-- Added Price column -->
+            <th class="actions-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="apptTableBody">
+          <!-- dynamic appointment rows -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Sales -->
+    <section id="sales" class="section" aria-live="polite" hidden>
+      <h1 class="section-title">Sales Overview</h1>
+      
+      <!-- Sales Summary Cards -->
+      <div class="sales-summary">
+        <div class="summary-card">
+          <h3>Total Sales</h3>
+          <p id="totalSales">₱0.00</p>
+          <span class="trend-indicator positive">+5.2%</span>
+        </div>
+        <div class="summary-card">
+          <h3>Today's Revenue</h3>
+          <p id="todayRevenue">₱0.00</p>
+          <span class="trend-indicator">vs Yesterday</span>
+        </div>
+        <div class="summary-card">
+          <h3>Monthly Revenue</h3>
+          <p id="monthlyRevenue">₱0.00</p>
+          <span class="trend-indicator positive">+12.8%</span>
+        </div>
+        <div class="summary-card">
+          <h3>Average Transaction</h3>
+          <p id="avgTransaction">₱0.00</p>
+          <span class="trend-indicator">Last 30 days</span>
+        </div>
+      </div>
+
+      <!-- Sales Statistics -->
+      <div class="sales-statistics">
+        <div class="stat-card stat-card-span-3">
+          <h3>Top Services</h3>
+          <div id="topServices" class="stat-content">
+            <!-- Will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Table -->
+      <div class="sales-table-container">
+        <h2>Sales Records</h2>
+        <table class="sales-table" aria-describedby="salesTableDesc">
+          <caption id="salesTableDesc">Detailed Sales Records</caption>
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Payment Method</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="salesTableBody">
+            <!-- dynamic sales rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sales Summary Table -->
+      <div class="sales-summary-table">
+        <h2>Sales Summary</h2>
+        <table aria-describedby="salesSummaryDesc">
+          <caption id="salesSummaryDesc">Sales Summary by Service</caption>
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Total Sales</th>
+              <th>Number of Transactions</th>
+              <th>Average Amount</th>
+              <th>% of Total</th>
+            </tr>
+          </thead>
+          <tbody id="salesSummaryBody">
+            <!-- dynamic summary rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Inventory Management -->
+    <section id="inventory" class="section" aria-live="polite" hidden>
+      <h1 class="section-title">Inventory Management</h1>
+      <div class="inventory-search-container">
+        <input type="text" id="inventorySearchInput" placeholder="Search inventory items..." aria-label="Search inventory items" />
+        <button id="inventorySearchBtn" aria-label="Search Inventory">Search</button>
+      </div>
+
+      <form class="form-inline" id="inventoryForm" aria-label="Add or Edit inventory item">
+        <label for="itemName">Item Name:</label>
+        <input type="text" id="itemName" required placeholder="Shampoo" />
+        <label for="itemQty">Quantity:</label>
+        <input type="number" id="itemQty" min="0" required placeholder="10" />
+        <button type="submit" id="addBtn">Add Item</button>
+        <!-- Update and Cancel buttons are handled via JavaScript -->
+        <input type="hidden" id="editingInventoryIndex">
+        <button type="button" id="updateBtn" class="hidden">Update Item</button>
+        <button type="button" id="cancelBtn" class="hidden">Cancel Edit</button>
+      </form>
+      <table aria-describedby="inventoryTableDesc">
+        <caption id="inventoryTableDesc">Inventory Items</caption>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th class="actions-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryTableBody">
+          <!-- dynamic inventory rows -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Record Management -->
+    <section id="records" class="section" aria-live="polite" hidden>
+      <h1 class="section-title">Record Management</h1>
+      
+      <div class="record-nav">
+        <button class="record-nav-btn active" data-section="pet-records">Pet & Customer Records</button>
+        <button class="record-nav-btn" data-section="user-management">User Management</button>
+        <button class="record-nav-btn" data-section="transactions">Transactions</button>
+      </div>
+
+      <!-- Pet Records Section -->
+      <div class="record-section active" id="pet-records">
+        <h2>Pet Records</h2>
+        <table aria-describedby="recordTableDesc">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Pet Name</th>
+              <th>Species</th>
+              <th>Breed</th>
+              <th>Notes</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="recordTableBody">
+            <!-- dynamic records rows -->
+          </tbody>
+        </table>
+
+        <!-- Customer Records Section -->
+        <h2 class="mt-4">Customer Records</h2>
+        <table aria-describedby="customerRecordTableDesc">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Password</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="customerRecordTableBody">
+            <!-- dynamic customer records rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- User Management Section -->
+      <div class="record-section" id="user-management">
+        <h2>User Management</h2>
+        <form class="form-inline" id="userForm" aria-label="Add User">
+          <label for="name">Name:</label>
+          <input type="text" id="name" required placeholder="John Doe" />
+          <label for="email">Email:</label>
+          <input type="email" id="email" required placeholder="john@example.com" />
+          <label for="phone">Phone Number:</label>
+          <input type="tel" id="phone" required placeholder="1234567890" />
+          <label for="address">Address:</label>
+          <input type="text" id="address" required placeholder="123 Main St" />
+          <label for="password">Password:</label>
+          <input type="text" id="password" required placeholder="password" />
+          <label for="role">Role:</label>
+          <select id="role" required>
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="staff">Staff</option>
+          </select>
+          <button type="submit">Add User</button>
+        </form>
+
+        <table aria-describedby="userTableDesc">
+          <caption id="userTableDesc">User List</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Password</th>
+              <th>Role</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <!-- dynamic user rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Transactions Section -->
+      <div class="record-section" id="transactions">
+        <h2>Transactions</h2>
+        <table aria-describedby="transactionTableDesc">
+          <caption id="transactionTableDesc">Transaction Records</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBody">
+            <!-- dynamic transaction rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Activity Logs Section -->
+      <div class="record-section" id="activity-logs">
+        <h2>Activity Logs</h2>
+        <table aria-describedby="activityLogTableDesc">
+          <caption id="activityLogTableDesc">System Activity Log</caption>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>User</th>
+              <th>Activity Type</th>
+              <th>Description</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="activityLogTableBody">
+            <!-- dynamic activity log rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section id="profile" class="section" aria-live="polite" hidden>
+      <!-- Personal Information Card -->
+      <div class="personal-info-card">
+        <div class="personal-info-title">Personal Information</div>
+        <div class="personal-info-list">
+          <p><strong>Name:</strong> <span id="personalName">ashlene</span></p>
+          <p><strong>Email:</strong> <span id="personalEmail">ashlene.@gmail.com</span></p>
+          <p><strong>Phone:</strong> <span id="personalPhone">5551234567</span></p>
+          <p><strong>Address:</strong> <span id="personalAddress">123 Main St, City</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confirmation Dialog (Modal) -->
+    <div id="confirmationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+        <div class="modal-content">
+            <h2 id="modalTitle">Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <div class="modal-buttons">
+                <button id="confirmLogoutBtn" class="danger">Yes, Log Out</button>
+                <button id="cancelLogoutBtn" class="secondary">No, Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Supabase configuration
+    const supabaseUrl = 'https://zehjuqavoktgxjqwcqpo.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaGp1cWF2b2t0Z3hqcXdjcXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDA2ODAsImV4cCI6MjA2MTc3NjY4MH0.n2Nb0QgaZFVW4zC0NyQGAy38tka_gwkhiTrBC8rU-GM';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const userRole = localStorage.getItem('userRole');
+
+        if (!isLoggedIn || userRole !== 'admin') {
+            alert('Unauthorized access. Please login as admin.');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Initialize the dashboard
+        initializeDashboard();
+    });
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        const modal = document.getElementById('confirmationModal');
+        modal.hidden = false;
+        modal.style.display = 'flex';
+    });
+
+    // Handle logout confirmation
+    document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
+        // Clear all localStorage items
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('email');
+        // Redirect to login page
+        window.location.href = 'login.html';
+    });
+
+    // Handle logout cancellation
+    document.getElementById('cancelLogoutBtn').addEventListener('click', () => {
+        const modal = document.getElementById('confirmationModal');
+        modal.hidden = true;
+        modal.style.display = 'none';
+    });
+
+    // Close modal if clicking outside
+    document.getElementById('confirmationModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('confirmationModal')) {
+            e.target.hidden = true;
+            e.target.style.display = 'none';
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !document.getElementById('confirmationModal').hidden) {
+            document.getElementById('confirmationModal').hidden = true;
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+    });
+
+    // Initialize dashboard function
+    async function initializeDashboard() {
+        // Your existing dashboard initialization code here
+        console.log('Dashboard initialized for admin');
+    }
+
+    (() => {
+      // Initialize Supabase client
+      const supabaseUrl = 'https://zehjuqavoktgxjqwcqpo.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaGp1cWF2b2t0Z3hqcXdjcXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDA2ODAsImV4cCI6MjA2MTc3NjY4MH0.n2Nb0QgaZFVW4zC0NyQGAy38tka_gwkhiTrBC8rU-GM';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      // Navigation and section toggle
+      const navItems = document.querySelectorAll('.nav-item');
+      const sections = document.querySelectorAll('.section');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const confirmationModal = document.getElementById('confirmationModal');
+      const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+      const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          if (item.classList.contains('active')) return;
+          navItems.forEach(i => {
+            i.classList.remove('active');
+            i.setAttribute('aria-pressed', 'false');
+          });
+          item.classList.add('active');
+          item.setAttribute('aria-pressed', 'true');
+
+          const target = item.getAttribute('data-section');
+          sections.forEach(sec => {
+            if (sec.id === target) {
+              sec.hidden = false;
+              sec.classList.add('active-section');
+              sec.setAttribute('aria-hidden', 'false');
+            } else {
+              sec.hidden = true;
+              sec.classList.remove('active-section');
+              sec.setAttribute('aria-hidden', 'true');
+            }
+          });
+          if (target === 'dashboard') {
+            updateDashboard();
+          } else if (target === 'users') {
+            renderUsers();
+          } else if (target === 'appointments') {
+            renderAppointments();
+          } else if (target === 'sales') {
+            renderSales();
+          } else if (target === 'inventory') {
+            renderInventory();
+          } else if (target === 'records') {
+            renderRecords();
+          } else if (target === 'staff') {
+            renderStaff();
+          } else if (target === 'profile') {
+            renderProfile();
+          }
+        });
+        // Keyboard support (Enter/Space)
+        item.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            item.click();
+          }
+        });
+      });
+
+      // Log out button functionality
+      logoutBtn.addEventListener('click', () => {
+          showConfirmationModal(); // Show the confirmation modal
+      });
+
+       // Keyboard support for logout button
+      logoutBtn.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            logoutBtn.click();
+          }
+      });
+
+      // Show the confirmation modal
+      function showConfirmationModal() {
+          confirmationModal.hidden = false;
+          confirmationModal.setAttribute('aria-hidden', 'false');
+          confirmationModal.style.display = 'flex'; // Use flex for centering
+          // Optional: Add a class to body to prevent scrolling
+          document.body.classList.add('modal-open');
+          // Focus on the first actionable element in the modal for accessibility
+          confirmLogoutBtn.focus();
+      }
+
+      // Hide the confirmation modal
+      function hideConfirmationModal() {
+          confirmationModal.hidden = true;
+          confirmationModal.setAttribute('aria-hidden', 'true');
+          confirmationModal.style.display = 'none';
+          document.body.classList.remove('modal-open');
+      }
+
+      // Handle confirmation button click
+      confirmLogoutBtn.addEventListener('click', () => {
+          // In a real application, this would involve:
+          // 1. Clearing authentication tokens/sessions.
+          // 2. Redirecting to a login page.
+          alert('Logging out...'); // Simple alert for demonstration
+          hideConfirmationModal();
+          // --- REDIRECTION CODE IS NOW HERE ---
+          window.location.href = 'login.html'; // This line redirects to login page
+          // --------------------------------------
+      });
+
+      // Handle cancel button click
+      cancelLogoutBtn.addEventListener('click', () => {
+          hideConfirmationModal();
+      });
+
+      // Close modal if clicking outside the modal content (optional)
+      confirmationModal.addEventListener('click', (e) => {
+          if (e.target === confirmationModal) {
+              hideConfirmationModal();
+          }
+      });
+
+      // Close modal if pressing Escape key
+      document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !confirmationModal.hidden) {
+              hideConfirmationModal();
+          }
+      });
+
+
+      // Data stores (Using localStorage for persistence)
+      // Updated sample data to include service and price
+      let appointments = JSON.parse(localStorage.getItem('appointments')) || [
+        {
+          customer: "John Doe",
+          pet: "Fido",
+          service: "Bathing", // Service name
+          datetime: "2024-07-01T10:30",
+          status: "Scheduled",
+          price: 20.00 // Store price with appointment
+        },
+        {
+          customer: "Sarah Lee",
+          pet: "Mittens",
+          service: "Grooming", // Service name
+          datetime: "2024-07-02T13:00",
+          status: "Completed",
+          price: 50.00 // Store price with appointment
+        },
+         {
+          customer: "Peter Jones",
+          pet: "Rex",
+          service: "Haircut", // Service name
+          datetime: new Date().toISOString().split('T')[0] + 'T11:00', // Today's appointment
+          status: "Scheduled",
+          price: 35.00 // Store price with appointment
+        }
+      ];
+      let sales = JSON.parse(localStorage.getItem('sales')) || [];
+      let inventory = JSON.parse(localStorage.getItem('inventory')) || [{ name: 'Shampoo', qty: 3 }, { name: 'Conditioner', qty: 8 }, { name: 'Toys', qty: 15 }, { name: 'Treats', qty: 5 }];
+      let records = JSON.parse(localStorage.getItem('records')) || [];
+      let staff = JSON.parse(localStorage.getItem('staff')) || [];
+      let users = JSON.parse(localStorage.getItem('users')) || []; // New user data store
+      let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+      let activityLogs = JSON.parse(localStorage.getItem('activityLogs')) || [];
+      let customerRecords = JSON.parse(localStorage.getItem('customerRecords')) || []; // Add customer records data store
+
+      // Define service prices (Still needed for sales calculation if price isn't stored)
+      const servicePrices = {
+          "Bathing": 20.00,
+          "Haircut": 35.00,
+          "Nail Care": 15.00,
+          "Grooming": 50.00
+          // Add more services and their prices here
+      };
+
+      let profileData = JSON.parse(localStorage.getItem('profileData')) || {
+        full_name: 'Admin Name',
+        email: 'admin@poochpurrfect.com',
+        phone_number: ''
+      };
+
+      // Save data to localStorage
+      function saveData() {
+        localStorage.setItem('appointments', JSON.stringify(appointments));
+        localStorage.setItem('sales', JSON.stringify(sales));
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+        localStorage.setItem('records', JSON.stringify(records));
+        localStorage.setItem('staff', JSON.stringify(staff));
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+        localStorage.setItem('activityLogs', JSON.stringify(activityLogs));
+        localStorage.setItem('profileData', JSON.stringify(profileData));
+        localStorage.setItem('customerRecords', JSON.stringify(customerRecords)); // Save customer records
+      }
+
+      // UTILITIES
+      function formatDateTime(dtstr) {
+        const dt = new Date(dtstr);
+        if (isNaN(dt)) return 'Invalid date';
+        return dt.toLocaleString(undefined, {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        });
+      }
+
+       function formatTimestamp(dtstr) {
+        const dt = new Date(dtstr);
+        if (isNaN(dt)) return 'Invalid date';
+        return dt.toLocaleString(undefined, {
+          dateStyle: 'short',
+          timeStyle: 'short'
+        });
+      }
+
+      // This function is now less critical if prices are stored with appointments,
+      // but kept as a fallback or for other uses.
+      function getServicePrice(serviceName) {
+          return servicePrices[serviceName] || 0; // Return price or 0 if service not found
+      }
+
+
+      // Dashboard Section
+      const dashboardTotalSalesEl = document.getElementById('dashboardTotalSales');
+      const dashboardApptsTodayEl = document.getElementById('dashboardApptsToday');
+      const dashboardRevenueMonthEl = document.getElementById('dashboardRevenueMonth');
+      const dashboardLowStockEl = document.getElementById('dashboardLowStock');
+      const activityTableBody = document.getElementById('activityTableBody');
+
+      async function updateDashboard() {
+        try {
+          // Fetch appointments
+          const { data: appointments, error: apptError } = await supabase
+            .from('newAppointments')
+            .select('*');
+
+          if (apptError) {
+            console.error('Error fetching appointments for dashboard:', apptError);
+            throw apptError;
+          }
+
+          // Ensure appointments is an array
+          const appointmentsArray = Array.isArray(appointments) ? appointments : [];
+
+          // Update Sales Metrics
+          const total = sales.reduce((acc, val) => acc + val.amount, 0);
+          const now = new Date();
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          
+          // Count appointments for today
+          const apptsToday = appointmentsArray.filter(a => {
+            const apptDate = new Date(a.appointmentDate);
+            return apptDate.getFullYear() === today.getFullYear() &&
+              apptDate.getMonth() === today.getMonth() &&
+              apptDate.getDate() === today.getDate();
+          }).length;
+
+          // Calculate revenue for this month
+          const revenueThisMonth = sales.reduce((acc, val) => {
+            const d = new Date(val.date);
+            return (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) ? acc + val.amount : acc;
+          }, 0);
+
+          dashboardTotalSalesEl.textContent = `₱${total.toFixed(2)}`;
+          dashboardApptsTodayEl.textContent = apptsToday;
+          dashboardRevenueMonthEl.textContent = `₱${revenueThisMonth.toFixed(2)}`;
+
+          // Update Low Stock Items (threshold set to 5)
+          const lowStockItems = inventory.filter(item => item.qty <= 5);
+          dashboardLowStockEl.textContent = lowStockItems.length;
+
+          // Update Recent Activity
+          const recentActivity = [];
+          
+          // Add recent appointments (last 5)
+          appointmentsArray.slice(-5).reverse().forEach(appt => {
+            recentActivity.push({
+              type: 'Appointment',
+              details: `${appt.customer} with ${appt.pet || appt.petName} for ${appt.serviceType} (${appt.status})`,
+              timestamp: appt.appointmentDate
+            });
+          });
+
+          // Add recent sales (last 5)
+          sales.slice(-5).reverse().forEach(sale => {
+            recentActivity.push({
+              type: 'Sale',
+              details: `Invoice #${sale.invoice} for ${sale.customer} - ₱${sale.amount.toFixed(2)}`,
+              timestamp: sale.date
+            });
+          });
+
+          // Sort recent activity by timestamp (most recent first)
+          recentActivity.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          // Limit to top 10 activities
+          const displayActivity = recentActivity.slice(0, 10);
+
+          activityTableBody.innerHTML = ''; // Clear previous activity
+          if (displayActivity.length === 0) {
+            activityTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No recent activity.</td></tr>';
+          } else {
+            displayActivity.forEach(activity => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td data-label="Activity Type">${activity.type}</td>
+                <td data-label="Details">${activity.details}</td>
+                <td data-label="Timestamp">${formatTimestamp(activity.timestamp)}</td>
+              `;
+              activityTableBody.appendChild(tr);
+            });
+          }
+        } catch (error) {
+          console.error('Error updating dashboard:', error);
+        }
+      }
+
+      async function renderAppointments() {
+        try {
+          console.log('Starting to fetch appointments...');
+          
+          // Fetch appointments
+          const { data: appointments, error: apptError } = await supabase
+            .from('newAppointments')
+            .select('*')
+            .order('appointmentDate', { ascending: false });
+
+          // Fetch user_settings
+          const { data: userSettings, error: settingsError } = await supabase
+            .from('user_settings')
+            .select('*');
+
+          if (apptError) {
+            console.error('Error fetching appointments:', apptError);
+            throw new Error(`Failed to fetch appointments: ${apptError.message}`);
+          }
+
+          if (settingsError) {
+            console.error('Error fetching user settings:', settingsError);
+            throw new Error(`Failed to fetch user settings: ${settingsError.message}`);
+          }
+
+          console.log('Appointments fetched successfully:', appointments);
+          console.log('User settings fetched successfully:', userSettings);
+
+          const apptTableBody = document.getElementById('apptTableBody');
+
+          if (!apptTableBody) {
+            console.error('Could not find appointment table element');
+            throw new Error('Required DOM element not found');
+          }
+
+          // Clear table
+          apptTableBody.innerHTML = '';
+
+          // Ensure appointments is an array
+          const appointmentsArray = Array.isArray(appointments) ? appointments : [];
+
+          if (appointmentsArray.length === 0) {
+            console.log('No appointments found in database');
+            apptTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No appointments found.</td></tr>';
+            return;
+          }
+
+          console.log('Processing appointments...');
+          appointmentsArray.forEach((appt) => {
+            // Debug log the appointment data
+            console.log('Processing appointment:', appt);
+            
+            // Try to find matching customer in user_settings
+            const customer = userSettings.find(u => 
+              u.fullName && appt.customer && 
+              u.fullName.trim().toLowerCase() === appt.customer.trim().toLowerCase()
+            );
+
+            // Debug log the matching result
+            console.log('Found customer:', customer);
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td data-label="Customer">
+                <div class="customer-info">
+                  <div><strong>Name:</strong> ${customer ? customer.fullName : '<span style="color:red">No match</span>'}</div>
+                  <div><strong>Email:</strong> ${customer ? customer.email : '<span style="color:red">No email</span>'}</div>
+                  <div><strong>Phone:</strong> ${customer ? customer.phone : '<span style="color:red">No phone</span>'}</div>
+                  <div><strong>Address:</strong> ${customer ? customer.address : '<span style="color:red">No address</span>'}</div>
+                </div>
+              </td>
+              <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
+              <td data-label="Service">${appt.serviceType || 'N/A'}</td>
+              <td data-label="Date & Time">${formatDateTime(appt.appointmentDate)}</td>
+              <td data-label="Status">${appt.status || 'Scheduled'}</td>
+              <td data-label="Price">₱${appt.price ? appt.price.toFixed(2) : '0.00'}</td>
+              <td data-label="Actions">
+                ${appt.status === 'Scheduled' ? `
+                  <button data-id="${appt.id}" class="complete-btn">Complete</button>
+                  <button data-id="${appt.id}" class="cancel-btn">Cancel</button>
+                ` : ''}
+                <button data-id="${appt.id}" class="delete-btn danger">Delete</button>
+              </td>
+            `;
+
+            apptTableBody.appendChild(tr);
+          });
+
+          console.log('Appointments rendered successfully');
+          await updateDashboard(); // Make sure to await the dashboard update
+        } catch (error) {
+          console.error('Error in renderAppointments:', error);
+          alert(`Error loading appointments: ${error.message}`);
+        }
+      }
+
+      // Update the appointment table click handler
+      document.addEventListener('click', async (e) => {
+        try {
+          if (e.target.classList.contains('complete-btn')) {
+            const id = e.target.getAttribute('data-id');
+            const notes = prompt('Enter completion notes:') || '';
+
+            // Update appointment status in Supabase
+            const { error: updateError } = await supabase
+              .from('newAppointments')
+              .update({ 
+                status: 'Completed',
+                notes: notes
+              })
+              .eq('id', id);
+
+            if (updateError) throw updateError;
+
+            // Get the appointment details
+            const { data: appt, error: fetchError } = await supabase
+              .from('newAppointments')
+              .select('*')
+              .eq('id', id)
+              .single();
+
+            if (fetchError) throw fetchError;
+
+            // Register sale on completion
+            const { error: saleError } = await supabase
+              .from('sales')
+              .insert([{
+                invoice: 'INV' + Date.now(),
+                date: new Date().toISOString(),
+                customer: appt.customer,
+                service: appt.serviceType,
+                amount: appt.price || getServicePrice(appt.serviceType)
+              }]);
+
+            if (saleError) throw saleError;
+
+            renderAppointments();
+            renderSales();
+          }
+          else if (e.target.classList.contains('cancel-btn')) {
+            const id = e.target.getAttribute('data-id');
+            const reason = prompt('Enter cancellation reason:');
+            
+            if (reason !== null) {
+              const { error } = await supabase
+                .from('newAppointments')
+                .update({ 
+                  status: 'Canceled',
+                  notes: reason
+                })
+                .eq('id', id);
+
+              if (error) throw error;
+              renderAppointments();
+            }
+          }
+          else if (e.target.classList.contains('delete-btn')) {
+            const id = e.target.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this appointment?')) {
+              const { error } = await supabase
+                .from('newAppointments')
+                .delete()
+                .eq('id', id);
+
+              if (error) throw error;
+              renderAppointments();
+            }
+          }
+        } catch (error) {
+          console.error('Error handling appointment action:', error);
+          alert('Error performing action. Please try again.');
+        }
+      });
+
+      // Sales Section
+      const totalSalesEl = document.getElementById('totalSales');
+      const apptsCompletedEl = document.getElementById('apptsCompleted');
+      const revenueMonthEl = document.getElementById('revenueMonth');
+      const salesTableBody = document.getElementById('salesTableBody');
+      const topServicesEl = document.getElementById('topServices');
+
+      async function updateSalesSummary() {
+        try {
+          console.log('Starting to fetch appointments for sales summary...');
+          
+          // Fetch all appointments
+          const { data: appointments, error: apptError } = await supabase
+            .from('newAppointments')
+            .select('*');
+
+          if (apptError) {
+            console.error('Error fetching appointments:', apptError);
+            throw new Error(`Failed to fetch appointments: ${apptError.message}`);
+          }
+
+          console.log('Appointments fetched successfully:', appointments);
+
+          // Ensure appointments is an array
+          const appointmentsArray = Array.isArray(appointments) ? appointments : [];
+          
+          if (appointmentsArray.length === 0) {
+            console.log('No appointments found');
+            totalSalesEl.textContent = '₱0.00';
+            apptsCompletedEl.textContent = '0';
+            revenueMonthEl.textContent = '₱0.00';
+            if (topServicesEl) {
+              topServicesEl.innerHTML = '<p>No services data available</p>';
+            }
+            return;
+          }
+
+          // Calculate total sales
+          const total = appointmentsArray.reduce((acc, appt) => {
+            const price = parseFloat(appt.price) || 0;
+            return acc + price;
+          }, 0);
+          
+          // Count completed appointments
+          const completedCount = appointmentsArray.filter(a => a.status === 'Completed').length;
+          
+          // Calculate revenue for this month
+          const now = new Date();
+          const revenueThisMonth = appointmentsArray
+            .filter(a => {
+              if (!a.appointmentDate) return false;
+              const apptDate = new Date(a.appointmentDate);
+              return apptDate.getFullYear() === now.getFullYear() && 
+                     apptDate.getMonth() === now.getMonth() &&
+                     a.status === 'Completed';
+            })
+            .reduce((acc, appt) => {
+              const price = parseFloat(appt.price) || 0;
+              return acc + price;
+            }, 0);
+
+          // Calculate top services
+          const serviceCounts = appointmentsArray.reduce((acc, appt) => {
+            if (appt.serviceType) {
+              acc[appt.serviceType] = (acc[appt.serviceType] || 0) + 1;
+            }
+            return acc;
+          }, {});
+
+          console.log('Service counts:', serviceCounts);
+
+          // Sort services by count and get top 5
+          const topServices = Object.entries(serviceCounts)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 5);
+
+          console.log('Top services:', topServices);
+
+          // Update UI elements
+          if (totalSalesEl) totalSalesEl.textContent = `₱${total.toFixed(2)}`;
+          if (apptsCompletedEl) apptsCompletedEl.textContent = completedCount;
+          if (revenueMonthEl) revenueMonthEl.textContent = `₱${revenueThisMonth.toFixed(2)}`;
+
+          // Update top services display
+          if (topServicesEl) {
+            if (topServices.length === 0) {
+              topServicesEl.innerHTML = '<p>No services data available</p>';
+            } else {
+              topServicesEl.innerHTML = `
+                <div class="top-services-list">
+                  ${topServices.map(([service, count]) => `
+                    <div class="service-item">
+                      <span class="service-name">${service}</span>
+                      <span class="service-count">${count} appointments</span>
+                    </div>
+                  `).join('')}
+                </div>
+              `;
+            }
+          }
+
+          // Add CSS for top services if not already added
+          if (!document.getElementById('top-services-style')) {
+            const style = document.createElement('style');
+            style.id = 'top-services-style';
+            style.textContent = `
+              .top-services-list {
+                padding: 10px;
+              }
+              .service-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 8px;
+                border-bottom: 1px solid #eee;
+              }
+              .service-item:last-child {
+                border-bottom: none;
+              }
+              .service-name {
+                font-weight: 500;
+              }
+              .service-count {
+                color: #666;
+              }
+            `;
+            document.head.appendChild(style);
+          }
+
+          console.log('Sales summary updated successfully');
+
+        } catch (error) {
+          console.error('Error updating sales summary:', error);
+          // Show error in UI elements
+          if (totalSalesEl) totalSalesEl.textContent = 'Error';
+          if (apptsCompletedEl) apptsCompletedEl.textContent = 'Error';
+          if (revenueMonthEl) revenueMonthEl.textContent = 'Error';
+          if (topServicesEl) topServicesEl.innerHTML = '<p>Error loading services data</p>';
+          
+          // Show error alert with more details
+          alert(`Error updating sales summary: ${error.message}`);
+        }
+      }
+
+      function renderSales() {
+        salesTableBody.innerHTML = '';
+        if (sales.length === 0) {
+          salesTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No sales recorded yet.</td></tr>';
+        } else {
+          // Displaying last 10 sales, most recent first
+          sales.slice(-10).reverse().forEach(sale => {
+            const tr = document.createElement('tr');
+            const dateObj = new Date(sale.date);
+            tr.innerHTML = `
+              <td data-label="Invoice #" class="invoice">${sale.invoice}</td>
+              <td data-label="Date">${dateObj.toLocaleDateString()}</td>
+              <td data-label="Customer">${sale.customer}</td>
+              <td data-label="Service">${sale.service}</td>
+              <td data-label="Amount" class="amount">₱${sale.amount.toFixed(2)}</td>
+            `;
+            salesTableBody.appendChild(tr);
+          });
+        }
+        updateSalesSummary();
+        saveData(); // Save after rendering
+        updateDashboard(); // Update dashboard metrics
+      }
+
+      // Inventory Management
+      const inventoryForm = document.getElementById('inventoryForm');
+      const inventoryTableBody = document.getElementById('inventoryTableBody');
+      const inventorySearchInput = document.getElementById('inventorySearchInput'); // Updated ID
+      const inventorySearchBtn = document.getElementById('inventorySearchBtn'); // New button ID
+      const addBtn = document.getElementById('addBtn');
+      const updateBtn = document.getElementById('updateBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const editingInventoryIndexInput = document.getElementById('editingInventoryIndex');
+
+
+      function renderInventory(filter = '') {
+        inventoryTableBody.innerHTML = '';
+        const filteredInventory = inventory.filter(item =>
+          item.name.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        if (filteredInventory.length === 0) {
+          inventoryTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No inventory items found.</td></tr>';
+          return;
+        }
+
+        filteredInventory.forEach((item, idx) => {
+          // Find the original index in the main inventory array
+          const originalIndex = inventory.findIndex(i => i.name === item.name && i.qty === item.qty);
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td data-label="Item">${item.name}</td>
+            <td data-label="Quantity">${item.qty}</td>
+            <td data-label="Actions">
+              <button data-index="${originalIndex}" class="edit-inv-btn">Edit</button>
+              <button data-index="${originalIndex}" class="delete-inv-btn danger">Delete</button>
+            </td>
+          `;
+          inventoryTableBody.appendChild(tr);
+        });
+        saveData(); // Save after rendering
+        updateDashboard(); // Update dashboard metrics
+      }
+
+      // Handle form submission for add/update
+      inventoryForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const name = inventoryForm.itemName.value.trim();
+        const qty = parseInt(inventoryForm.itemQty.value);
+        const editingIndex = editingInventoryIndexInput.value;
+
+        if (!name || isNaN(qty) || qty < 0) {
+          alert("Please enter valid item name and quantity.");
+          return;
+        }
+
+        if (editingIndex !== '') { // Update existing item
+          const index = parseInt(editingIndex);
+          if (index >= 0 && index < inventory.length) {
+            inventory[index].name = name; // Allow editing name too
+            inventory[index].qty = qty;
+          }
+          updateBtn.classList.remove('hidden');
+          cancelBtn.classList.remove('hidden');
+          addBtn.classList.remove('hidden');
+          editingInventoryIndexInput.value = ''; // Clear editing index
+        } else { // Add new item or update quantity if exists
+          const existingIndex = inventory.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
+          if (existingIndex !== -1) {
+            inventory[existingIndex].qty = qty; // Just update quantity for existing item
+          } else {
+            inventory.push({
+              name,
+              qty
+            });
+          }
+        }
+
+        inventoryForm.reset();
+        renderInventory(inventorySearchInput.value); // Re-render with current filter
+      });
+
+      // Handle edit and delete clicks in inventory table
+      inventoryTableBody.addEventListener('click', e => {
+        if (e.target.classList.contains('delete-inv-btn')) {
+          const idx = e.target.getAttribute('data-index');
+          if (confirm(`Are you sure you want to delete "${inventory[idx].name}"?`)) {
+            inventory.splice(idx, 1);
+            renderInventory(inventorySearchInput.value);
+          }
+        } else if (e.target.classList.contains('edit-inv-btn')) {
+          const idx = e.target.getAttribute('data-index');
+          const item = inventory[idx];
+          inventoryForm.itemName.value = item.name;
+          inventoryForm.itemQty.value = item.qty;
+          editingInventoryIndexInput.value = idx; // Store index being edited
+
+          // Toggle form buttons
+          addBtn.classList.remove('hidden');
+          updateBtn.classList.remove('hidden');
+          cancelBtn.classList.remove('hidden');
+        }
+      });
+
+      // Handle update button click (redundant with form submit, but good for clarity)
+      updateBtn.addEventListener('click', () => {
+        // Form submit handler will take care of the update
+        inventoryForm.dispatchEvent(new Event('submit'));
+      });
+
+      // Handle cancel button click
+      cancelBtn.addEventListener('click', () => {
+        inventoryForm.reset();
+        addBtn.classList.remove('hidden');
+        updateBtn.classList.add('hidden');
+        cancelBtn.classList.add('hidden');
+        editingInventoryIndexInput.value = '';
+      });
+
+      // Inventory search functionality (on button click)
+      inventorySearchBtn.addEventListener('click', () => {
+        const filter = inventorySearchInput.value;
+        renderInventory(filter);
+      });
+
+       // Inventory search functionality (on pressing Enter in input)
+      inventorySearchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault(); // Prevent form submission if input is inside a form
+          const filter = inventorySearchInput.value;
+          renderInventory(filter);
+        }
+      });
+
+
+      // Record Management
+      const recordNavBtns = document.querySelectorAll('.record-nav-btn');
+      const recordSections = document.querySelectorAll('.record-section');
+
+      recordNavBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sectionId = btn.getAttribute('data-section');
+          
+          // Hide all sections first
+          recordSections.forEach(section => {
+            section.style.display = 'none';
+            section.classList.remove('active');
+          });
+
+          // Remove active class from all buttons
+          recordNavBtns.forEach(b => {
+            b.classList.remove('active');
+          });
+
+          // Show selected section and activate its button
+          const targetSection = document.getElementById(sectionId);
+          if (targetSection) {
+            targetSection.style.display = 'block';
+            targetSection.classList.add('active');
+            btn.classList.add('active');
+
+            // Load appropriate content based on section
+            switch(sectionId) {
+              case 'pet-records': 
+                renderPetAndCustomerRecords();
+                break;
+              case 'user-management':
+                renderUsers();
+                break;
+              case 'transactions':
+                renderTransactions();
+                break;
+              case 'activity-logs':
+                renderActivityLogs();
+                break;
+            }
+          }
+        });
+      });
+
+      const recordTableBody = document.getElementById('recordTableBody');
+
+      async function renderRecords() {
+        // Render pet records from Supabase profile-pets
+        recordTableBody.innerHTML = '';
+        try {
+          const { data: pets, error } = await supabase
+            .from('profile-pets')
+            .select('*');
+          if (error) {
+            console.error('Error fetching profile-pets:', error);
+            recordTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading pet records.</td></tr>';
+            return;
+          }
+          if (!pets || pets.length === 0) {
+            recordTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No pet records found.</td></tr>';
+            return;
+          }
+          pets.forEach((pet, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td data-label="Customer">${pet.customer || ''}</td>
+              <td data-label="Pet Name">${pet.petName || ''}</td>
+              <td data-label="Species">${pet.petSpecies || ''}</td>
+              <td data-label="Breed">${pet.petBreed || ''}</td>
+              <td data-label="Notes">${pet.notes || ''}</td>
+              <td data-label="Actions">
+                <button data-index="${idx}" class="delete-rec-btn danger">Delete</button>
+              </td>
+            `;
+            recordTableBody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error('Error rendering pet records:', err);
+          recordTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading pet records.</td></tr>';
+        }
+        saveData(); // Save after rendering
+      }
+
+      // Render customer records from Supabase user_settings
+      const customerRecordTableBody = document.getElementById('customerRecordTableBody');
+      if (!customerRecordTableBody) {
+        console.error('Customer Records table body not found in DOM.');
+        return;
+      }
+      customerRecordTableBody.innerHTML = '';
+      (async () => {
+        try {
+          const { data: userSettings, error } = await supabase
+            .from('user_settings')
+            .select('*');
+          if (error) {
+            console.error('Error fetching user_settings:', error);
+            customerRecordTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading customer records.</td></tr>';
+            return;
+          }
+          if (!userSettings || userSettings.length === 0) {
+            customerRecordTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No customer records found.</td></tr>';
+            return;
+          }
+          userSettings.forEach((customer, idx) => {
+            console.log('Customer record:', customer); // Debug log
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td data-label="Name">${customer.fullName || ''}</td>
+              <td data-label="Email">${customer.email || ''}</td>
+              <td data-label="Phone">${customer.phone || ''}</td>
+              <td data-label="Address">${customer.address || ''}</td>
+              <td data-label="Password">${customer.password || ''}</td>
+              <td data-label="Actions">
+                <button data-index="${idx}" class="edit-customer-btn">Edit</button>
+                <button data-index="${idx}" class="delete-customer-btn danger">Delete</button>
+              </td>
+            `;
+            customerRecordTableBody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error('Error rendering customer records:', err);
+          customerRecordTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading customer records.</td></tr>';
+        }
+      })();
+
+      // User Management
+      const userForm = document.getElementById('userForm');
+      const userTableBody = document.getElementById('userTableBody');
+
+      async function renderUsers() {
+        try {
+          // Fetch users from Supabase
+          const { data: users, error } = await supabase
+            .from('users')
+            .select('*')
+            .order('created_at', { ascending: true });
+
+          if (error) {
+            console.error('Error fetching users:', error);
+            throw new Error(`Failed to fetch users: ${error.message}`);
+          }
+
+          if (!userTableBody) {
+            console.error('User table body element not found');
+            return;
+          }
+
+          userTableBody.innerHTML = '';
+
+          if (!users || users.length === 0) {
+            userTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No users added yet.</td></tr>';
+            return;
+          }
+
+          users.forEach((user) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td data-label="Name">${user.full_name || 'N/A'}</td>
+              <td data-label="Email">${user.email || 'N/A'}</td>
+              <td data-label="Phone">${user.phone_number || 'N/A'}</td>
+              <td data-label="Address">${user.address || 'N/A'}</td>
+              <td data-label="Password">${user.password || 'N/A'}</td>
+              <td data-label="Role">${user.role || 'N/A'}</td>
+              <td data-label="Actions">
+                <button data-id="${user.id}" class="delete-user-btn danger">Delete</button>
+              </td>
+            `;
+            userTableBody.appendChild(tr);
+          });
+
+          console.log('Users rendered successfully:', users);
+        } catch (error) {
+          console.error('Error in renderUsers:', error);
+          alert(`Error loading users: ${error.message}`);
+        }
+      }
+
+      userForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+          const name = userForm.name.value.trim();
+          const email = userForm.email.value.trim();
+          const phone = userForm.phone.value.trim();
+          const address = userForm.address.value.trim();
+          const password = userForm.password.value;
+          const role = userForm.role.value;
+
+          if (!name || !email || !phone || !address || !password || !role) {
+            alert("Please fill in all required fields");
+            return;
+          }
+
+          // Check if user already exists
+          const { data: existingUser, error: checkError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .single();
+
+          if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+            console.error('Error checking existing user:', checkError);
+            throw new Error(`Failed to check existing user: ${checkError.message}`);
+          }
+
+          if (existingUser) {
+            alert("User with this email already exists");
+            return;
+          }
+
+          // Insert new user directly into the users table
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert([{
+              full_name: name,
+              email: email,
+              phone_number: phone,
+              address: address,
+              password: password,
+              role: role
+            }]);
+
+          if (insertError) {
+            console.error('Error inserting user:', insertError);
+            throw new Error(`Failed to insert user: ${insertError.message}`);
+          }
+
+          userForm.reset();
+          await renderUsers(); // Wait for users to be rendered
+          logActivity('user', `Added new user: ${name}`);
+          alert('User added successfully!');
+        } catch (error) {
+          console.error('Error adding user:', error);
+          alert(`Error adding user: ${error.message}`);
+        }
+      });
+
+      userTableBody.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('delete-user-btn')) {
+          try {
+            const id = e.target.getAttribute('data-id');
+            const name = e.target.closest('tr').querySelector('td[data-label="Name"]').textContent;
+            
+            if (confirm(`Are you sure you want to delete user "${name}"?`)) {
+              const { error } = await supabase
+                .from('users')
+                .delete()
+                .eq('id', id);
+
+              if (error) throw error;
+
+              renderUsers();
+              logActivity('user', `Deleted user: ${name}`);
+            }
+          } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('Error deleting user. Please try again.');
+          }
+        }
+      });
+
+
+      // Initial render calls
+      renderAppointments();
+      renderSales();
+      renderInventory(); // Initial render without filter
+      renderRecords();
+      renderUsers(); // Initial render of users
+      updateDashboard(); // Initial dashboard update
+
+      // Transaction Management
+      const transactionForm = document.getElementById('transactionForm');
+      const transactionTableBody = document.getElementById('transactionTableBody');
+      const totalRevenueEl = document.getElementById('totalRevenue');
+      const todaySalesEl = document.getElementById('todaySales');
+      const monthlyRevenueEl = document.getElementById('monthlyRevenue');
+
+      function updateTransactionSummary() {
+        const total = transactions.reduce((acc, val) => acc + val.amount, 0);
+        const today = new Date().toISOString().split('T')[0];
+        const todayTotal = transactions
+          .filter(t => t.date === today)
+          .reduce((acc, val) => acc + val.amount, 0);
+        const currentMonth = new Date().getMonth();
+        const monthlyTotal = transactions
+          .filter(t => new Date(t.date).getMonth() === currentMonth)
+          .reduce((acc, val) => acc + val.amount, 0);
+
+        totalRevenueEl.textContent = `₱${total.toFixed(2)}`;
+        todaySalesEl.textContent = `₱${todayTotal.toFixed(2)}`;
+        monthlyRevenueEl.textContent = `₱${monthlyTotal.toFixed(2)}`;
+      }
+
+      // Function to render Transactions
+      async function renderTransactions() {
+        try {
+          // Fetch appointments from newAppointments
+          const { data: appointments, error } = await supabase
+            .from('newAppointments')
+            .select('*')
+            .order('appointmentDate', { ascending: false });
+
+          // Fetch user_settings for customer info
+          const { data: userSettings, error: userSettingsError } = await supabase
+            .from('user_settings')
+            .select('*');
+
+          if (error) {
+            console.error('Error fetching appointments:', error);
+            throw error;
+          }
+          if (userSettingsError) {
+            console.error('Error fetching user settings:', userSettingsError);
+            throw userSettingsError;
+          }
+
+          const transactionTableBody = document.getElementById('transactionTableBody');
+          if (!transactionTableBody) {
+            console.error('Transaction table body element not found');
+            return;
+          }
+
+          if (!appointments || appointments.length === 0) {
+            transactionTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No transactions found.</td></tr>';
+            return;
+          }
+
+          transactionTableBody.innerHTML = appointments.map(appt => {
+            return `
+              <tr>
+                <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
+                <td data-label="Customer">
+                  <div class="customer-info">
+                    <div><strong>Name:</strong> ${appt.customer || appt.fullName || appt.name || 'N/A'}</div>
+                    <div><strong>Email:</strong> ${appt.email || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${appt.phone || 'N/A'}</div>
+                   
+                  </div>
+                </td>
+                <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
+                <td data-label="Service">${appt.serviceType || 'N/A'}</td>
+                <td data-label="Amount">₱${appt.price ? appt.price.toFixed(2) : '0.00'}</td>
+                <td data-label="Status">${appt.status || 'N/A'}</td>
+                <td data-label="Actions">
+                  <button class="edit-transaction-btn" data-id="${appt.id}">Edit</button>
+                  <button class="delete-transaction-btn danger" data-id="${appt.id}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        } catch (error) {
+          console.error('Error rendering transactions:', error);
+          const transactionTableBody = document.getElementById('transactionTableBody');
+          if (transactionTableBody) {
+            transactionTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading transactions. Please try again.</td></tr>';
+          }
+        }
+      }
+
+      transactionForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const date = transactionForm.transactionDate.value;
+        const customer = transactionForm.transactionCustomer.value.trim();
+        const service = transactionForm.transactionService.value;
+        const amount = parseFloat(transactionForm.transactionAmount.value);
+
+        if (!date || !customer || !service || isNaN(amount)) {
+          alert('Please fill in all fields correctly.');
+          return;
+        }
+
+        transactions.push({
+          date,
+          customer,
+          service,
+          amount,
+          status: 'Completed'
+        });
+
+        // Log the activity
+        logActivity('transaction', `New transaction added: ${service} for ${customer} - ₱${amount.toFixed(2)}`);
+
+        transactionForm.reset();
+        renderTransactions();
+      });
+
+      transactionTableBody.addEventListener('click', e => {
+        if (e.target.classList.contains('delete-trans-btn')) {
+          const idx = e.target.getAttribute('data-index');
+          if (confirm('Are you sure you want to delete this transaction?')) {
+            const trans = transactions[idx];
+            logActivity('transaction', `Transaction deleted: ${trans.service} for ${trans.customer} - ₱${trans.amount.toFixed(2)}`);
+            transactions.splice(idx, 1);
+            renderTransactions();
+          }
+        }
+      });
+
+      // Activity Logs Management
+      const activityTypeSelect = document.getElementById('activityType');
+      const activityDateInput = document.getElementById('activityDate');
+      const filterActivityBtn = document.getElementById('filterActivityBtn');
+      const activityLogTableBody = document.getElementById('activityLogTableBody');
+
+      function logActivity(type, description) {
+        try {
+          const log = {
+            timestamp: new Date().toISOString(),
+            user: 'Admin', // In a real app, this would be the logged-in user
+            type,
+            description,
+            status: 'Success'
+          };
+          activityLogs.unshift(log); // Add to beginning of array
+          saveData();
+          
+          // Only try to render if the element exists
+          if (activityLogTableBody) {
+            renderActivityLogs();
+          }
+        } catch (error) {
+          console.error('Error logging activity:', error);
+        }
+      }
+
+      function renderActivityLogs(filterType = 'all', filterDate = '') {
+        if (!activityLogTableBody) return; // Exit if element doesn't exist
+        
+        activityLogTableBody.innerHTML = '';
+        let filteredLogs = activityLogs;
+
+        if (filterType !== 'all') {
+          filteredLogs = filteredLogs.filter(log => log.type === filterType);
+        }
+
+        if (filterDate) {
+          filteredLogs = filteredLogs.filter(log => 
+            log.timestamp.startsWith(filterDate)
+          );
+        }
+
+        if (filteredLogs.length === 0) {
+          activityLogTableBody.innerHTML = '<tr><td colspan="5" class="centered-text">No activity logs found.</td></tr>';
+          return;
+        }
+
+        filteredLogs.forEach(log => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td data-label="Timestamp">${new Date(log.timestamp).toLocaleString()}</td>
+            <td data-label="User">${log.user}</td>
+            <td data-label="Activity Type">${log.type}</td>
+            <td data-label="Description">${log.description}</td>
+            <td data-label="Status">${log.status}</td>
+          `;
+          activityLogTableBody.appendChild(tr);
+        });
+      }
+
+      filterActivityBtn.addEventListener('click', () => {
+        const type = activityTypeSelect.value;
+        const date = activityDateInput.value;
+        renderActivityLogs(type, date);
+      });
+
+      // Profile Section Functionality
+      async function renderProfile() {
+        try {
+          // Fetch user data from Supabase users table
+          const { data: users, error } = await supabase
+            .from('users')
+            .select('*');
+
+          if (error) {
+            console.error('Error fetching users:', error);
+            throw error;
+          }
+
+          // Get the first user (admin) or create one if none exists
+          let user = users && users.length > 0 ? users[0] : null;
+
+          if (!user) {
+            console.log('No user found, creating default admin user...');
+            const { data: newUser, error: createError } = await supabase
+              .from('users')
+              .insert([
+                {
+                  full_name: 'Admin Name',
+                  email: 'admin@poochpurrfect.com',
+                  phone_number: '',
+                  address: '',
+                  role: 'admin',
+                  password: 'admin123' // Default password
+                }
+              ])
+              .select();
+
+            if (createError) {
+              console.error('Error creating user:', createError);
+              throw createError;
+            }
+
+            user = newUser[0];
+            console.log('Default user created:', user);
+          }
+
+          // Update personal information display
+          if (user) {
+            document.getElementById('personalName').textContent = user.full_name || 'Admin Name';
+            document.getElementById('personalEmail').textContent = user.email || '';
+            document.getElementById('personalPhone').textContent = user.phone_number || '';
+            document.getElementById('personalAddress').textContent = user.address || '';
+          }
+        } catch (error) {
+          console.error('Error rendering profile:', error);
+          alert('Error loading profile data. Please try again.');
+        }
+      }
+
+      // Function to handle profile editing
+      async function editProfile(user) {
+        const newName = prompt('Enter new name:', user.full_name);
+        if (newName === null) return;
+
+        const newPhone = prompt('Enter new phone number:', user.phone_number);
+        if (newPhone === null) return;
+
+        const newAddress = prompt('Enter new address:', user.address);
+        if (newAddress === null) return;
+
+        try {
+          const { error } = await supabase
+            .from('users')
+            .update({
+              full_name: newName,
+              phone_number: newPhone,
+              address: newAddress
+            })
+            .eq('email', user.email);
+
+          if (error) throw error;
+
+          alert('Profile updated successfully!');
+          renderProfile(); // Refresh the profile display
+        } catch (error) {
+          console.error('Error updating profile:', error);
+          alert('Error updating profile. Please try again.');
+        }
+      }
+
+      // Function to render Pet and Customer Records
+      async function renderPetAndCustomerRecords() {
+        try {
+          // Fetch and display pet records
+          const { data: pets, error: petsError } = await supabase
+            .from('profile-pets')
+            .select('*');
+
+          // Fetch and display customer records
+          const { data: customers, error: customersError } = await supabase
+            .from('user_settings')
+            .select('*');
+
+          if (petsError) throw petsError;
+          if (customersError) throw customersError;
+
+          // Update pet records table
+          const petTableBody = document.getElementById('recordTableBody');
+          if (!pets || pets.length === 0) {
+            petTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No pet records found.</td></tr>';
+          } else {
+            petTableBody.innerHTML = pets.map(pet => `
+              <tr>
+                <td data-label="Customer">${pet.customer || ''}</td>
+                <td data-label="Pet Name">${pet.petName || ''}</td>
+                <td data-label="Species">${pet.petSpecies || ''}</td>
+                <td data-label="Breed">${pet.petBreed || ''}</td>
+                <td data-label="Notes">${pet.notes || ''}</td>
+                <td data-label="Actions">
+                  <button class="edit-pet-btn" data-id="${pet.id}">Edit</button>
+                  <button class="delete-pet-btn danger" data-id="${pet.id}">Delete</button>
+                </td>
+              </tr>
+            `).join('');
+          }
+
+          // Update customer records table
+          const customerTableBody = document.getElementById('customerRecordTableBody');
+          if (!customers || customers.length === 0) {
+            customerTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No customer records found.</td></tr>';
+          } else {
+            customerTableBody.innerHTML = customers.map(customer => `
+              <tr>
+                <td data-label="Name">${customer.fullName || ''}</td>
+                <td data-label="Email">${customer.email || ''}</td>
+                <td data-label="Phone">${customer.phone || ''}</td>
+                <td data-label="Address">${customer.address || ''}</td>
+                <td data-label="Password">${customer.password || ''}</td>
+                <td data-label="Actions">
+                  <button class="edit-customer-btn" data-id="${customer.id}">Edit</button>
+                  <button class="delete-customer-btn danger" data-id="${customer.id}">Delete</button>
+                </td>
+              </tr>
+            `).join('');
+          }
+        } catch (error) {
+          console.error('Error rendering pet and customer records:', error);
+          alert('Error loading records. Please try again.');
+        }
+      }
+
+      // Function to render Staff and Scheduling
+      async function renderStaffAndScheduling() {
+        try {
+          const { data: staff, error } = await supabase
+            .from('staff')
+            .select('*, staff_schedules(*)');
+
+          if (error) throw error;
+
+          const staffTableBody = document.getElementById('staffTableBody');
+          if (!staff || staff.length === 0) {
+            staffTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No staff records found.</td></tr>';
+          } else {
+            staffTableBody.innerHTML = staff.map(member => `
+              <tr>
+                <td>${member.full_name || ''}</td>
+                <td>${member.role || ''}</td>
+                <td>${member.staff_schedules?.map(schedule => 
+                  `${schedule.day}: ${schedule.start_time}-${schedule.end_time}`
+                ).join('<br>') || ''}</td>
+                <td>
+                  <button class="edit-staff-btn" data-id="${member.id}">Edit</button>
+                  <button class="delete-staff-btn danger" data-id="${member.id}">Delete</button>
+                </td>
+              </tr>
+            `).join('');
+          }
+        } catch (error) {
+          console.error('Error rendering staff and scheduling:', error);
+          alert('Error loading staff records. Please try again.');
+        }
+      }
+
+      // Function to render User Management
+      async function renderUserManagement() {
+        try {
+          const { data: users, error } = await supabase
+            .from('users')
+            .select('*');
+
+          if (error) throw error;
+
+          const userTableBody = document.getElementById('userTableBody');
+          if (!users || users.length === 0) {
+            userTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No users found.</td></tr>';
+          } else {
+            userTableBody.innerHTML = users.map(user => `
+              <tr>
+                <td>${user.full_name || ''}</td>
+                <td>${user.email || ''}</td>
+                <td>${user.phone_number || ''}</td>
+                <td>${user.address || ''}</td>
+                <td>${'*'.repeat(8)}</td>
+                <td>${user.role || ''}</td>
+                <td>
+                  <button class="edit-user-btn" data-id="${user.id}">Edit</button>
+                  <button class="delete-user-btn danger" data-id="${user.id}">Delete</button>
+                </td>
+              </tr>
+            `).join('');
+          }
+          
+        } catch (error) {
+          console.error('Error rendering user management:', error);
+          alert('Error loading user records. Please try again.');
+        }
+      }
+
+      // Function to render Activity Logs
+      async function renderActivityLogs() {
+        try {
+          const { data: logs, error } = await supabase
+            .from('activity_logs')
+            .select('*');
+
+          if (error) throw error;
+
+          const activityLogTableBody = document.getElementById('activityLogTableBody');
+          if (!logs || logs.length === 0) {
+            activityLogTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No activity logs found.</td></tr>';
+          } else {
+            activityLogTableBody.innerHTML = logs.map(log => `
+              <tr>
+                <td>${new Date(log.timestamp).toLocaleString()}</td>
+                <td>${log.user || ''}</td>
+                <td>${log.type || ''}</td>
+                <td>${log.description || ''}</td>
+                <td>${log.status || ''}</td>
+              </tr>
+            `).join('');
+          }
+        } catch (error) {
+          console.error('Error rendering activity logs:', error);
+          alert('Error loading activity logs. Please try again.');
+        }
+      }
+
+    })();
+  </script>
+</body>
+
+</html>

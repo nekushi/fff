@@ -1,0 +1,1467 @@
+/* Basic CSS Variables for theme */
+:root {
+    --primary-color: #008080;
+    /* Teal */
+    --secondary-color: #f4f7f6;
+    /* Light grey */
+    --sidebar-bg: #ffffff;
+    /* White */
+    --text-color: #333;
+    /* Dark grey */
+    --danger-color: #ff4d4d;
+    /* Red */
+    --border-color: #ddd;
+    /* Light grey border */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+  
+    /* Spacing variables */
+    --spacing-x-small: 4px;
+    --spacing-small: 8px;
+    --spacing-medium: 16px;
+    --spacing-large: 24px;
+  }
+  
+  * {
+  box-sizing: border-box;
+  }
+  
+  body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  /* Use min-height for better handling of content */
+  display: flex;
+  background-color: rgba(0, 128, 128, 0.078);
+  color: var(--text-color);
+  }
+  
+  /* Modal specific styles */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black with opacity */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+  }
+  
+  .modal-content {
+    background-color: white;
+    margin: auto;
+    padding: var(--spacing-large);
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    max-width: 400px; /* Max width for the modal */
+    width: 90%; /* Responsive width */
+    text-align: center;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+  }
+  
+  .modal-content p {
+    margin-bottom: var(--spacing-large);
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: center; /* Center buttons */
+    gap: var(--spacing-medium); /* Space between buttons */
+  }
+  
+  .modal-buttons button {
+    padding: var(--spacing-small) var(--spacing-medium);
+    font-size: 1rem;
+    flex-grow: 1; /* Allow buttons to grow */
+    max-width: 150px; /* Limit button width */
+  }
+  
+  .modal-buttons button.secondary {
+    background-color: #ccc; /* Grey button for cancel */
+    color: #333;
+  }
+  
+  .modal-buttons button.secondary:hover {
+    background-color: #bbb;
+  }
+  
+  
+  /* Sidebar styles */
+  .sidebar {
+  width: 240px;
+  background-color: var(--sidebar-bg);
+  color: #444;
+  /* Adjusted for better contrast */
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-large);
+  -webkit-user-select: none; /* Safari compatibility */
+  user-select: none;
+  box-shadow: 2px 0 5px var(--shadow-color);
+  /* Adjusted shadow */
+  flex-shrink: 0;
+  /* Prevent sidebar from shrinking */
+  }
+  
+  .logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  /* Changed to 50% for a perfect circle */
+  margin: var(--spacing-large) auto;
+  /* Center the logo and use consistent spacing */
+  background-color: var(--primary-color);
+  object-fit: cover;
+  /* Ensure logo covers the area */
+  }
+  
+  .nav-item {
+  padding: var(--spacing-medium) var(--spacing-large);
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  /* Added color transition */
+  font-weight: 600;
+  font-size: 1rem;
+  }
+  
+  .nav-item:hover {
+  background-color: var(--secondary-color);
+  border-left: 4px solid var(--primary-color);
+  color: var(--primary-color);
+  /* Highlight on hover */
+  }
+  
+  .nav-item.active {
+  background-color: var(--secondary-color);
+  border-left: 4px solid var(--primary-color);
+  color: var(--primary-color);
+  /* Highlight active item */
+  }
+  
+  .nav-item:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  }
+  
+  /* Style for the Log Out button */
+  .logout-item {
+    margin-top: auto; /* Push the logout button to the bottom */
+    border-top: 1px solid var(--border-color); /* Optional: add a separator line */
+    color: teal; /* Make logout stand out */
+    font-weight: 700; /* Make logout bold */
+  }
+  
+  .logout-item:hover {
+    background-color: teal;
+    color: white;
+    border-left-color: teal; /* Match the border color */
+  }
+  
+  .logout-item:focus {
+    outline-color: teal;
+  }
+  
+  
+  /* Main content */
+  .main-content {
+  flex: 1;
+  padding: var(--spacing-large);
+  /* Simplified padding */
+  overflow-y: auto;
+  }
+  
+  /* Section title */
+  h1.section-title {
+  margin-top: 0;
+  font-weight: 700;
+  color: #1e273b;
+  /* Darker heading color */
+  margin-bottom: var(--spacing-large);
+  /* Add space below title */
+  }
+  
+  /* Dashboard Specific Styles */
+  .dashboard-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .overview-card {
+  background-color: white;
+  padding: var(--spacing-medium);
+  border-radius: 5px;
+  box-shadow: 0 1px 4px var(--shadow-color);
+  text-align: center;
+  }
+  
+  .overview-card h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-small);
+  font-size: 1rem;
+  color: #555;
+  }
+  
+  .overview-card p {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  }
+  
+  .recent-activity h2 {
+  margin-top: var(--spacing-large);
+  margin-bottom: var(--spacing-medium);
+  color: #1e273b;
+  }
+  
+  /* Added styles for the activity table */
+  .activity-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-medium);
+  background: white;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  font-size: 1rem;
+  }
+  
+  .activity-table th,
+  .activity-table td {
+  padding: var(--spacing-small) var(--spacing-medium);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 1rem;
+  }
+  
+  .activity-table th {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  }
+  
+  .activity-table tr:hover {
+  background-color: #eaf4ff;
+  }
+  
+  
+  /* General table styling (applies to other tables) */
+  table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-medium);
+  background: white;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  /* Adjusted shadow */
+  font-size: 1rem;
+  }
+  
+  caption {
+  padding: var(--spacing-small);
+  font-weight: bold;
+  text-align: left;
+  caption-side: top;
+  }
+  
+  /* Adjusted padding for non-activity tables for consistency */
+  table:not(.activity-table) th,
+  table:not(.activity-table) td {
+  padding: var(--spacing-medium) var(--spacing-large);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 1rem;
+  }
+  
+  table:not(.activity-table) th {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  }
+  
+  table:not(.activity-table) tr:hover {
+  background-color: #eaf4ff;
+  }
+  
+  
+  button {
+  padding: var(--spacing-x-small) var(--spacing-small);
+  border: none;
+  border-radius: 3px;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-right: var(--spacing-x-small);
+  transition: background-color 0.2s;
+  }
+  
+  button:last-child {
+  margin-right: 0;
+  }
+  
+  button:hover {
+  background-color: #006666;
+  /* Darker teal on hover */
+  }
+  
+  button:focus {
+  outline: 2px solid var(--primary-color);
+  /* Add focus style */
+  outline-offset: 2px;
+  }
+  
+  button.danger {
+  background-color: var(--danger-color);
+  /* Red for danger actions */
+  }
+  
+  button.danger:hover {
+  background-color: teal;
+  /* Darker red on hover */
+  }
+  
+  button.danger:focus {
+  outline-color: var(--danger-color);
+  }
+  
+  /* Form styles */
+  .form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-small);
+  align-items: center;
+  margin-top: var(--spacing-small);
+  margin-bottom: var(--spacing-large);
+  /* Increased bottom margin */
+  background-color: white;
+  padding: var(--spacing-medium);
+  border-radius: 5px;
+  box-shadow: 0 1px 4px var(--shadow-color);
+  }
+  
+  .form-inline label {
+  min-width: 90px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #444;
+  /* Darker label color */
+  }
+  
+  .form-inline input,
+  .form-inline select {
+  padding: var(--spacing-x-small) 8px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  /* Light grey border */
+  border-radius: 3px;
+  flex-grow: 1;
+  max-width: 250px;
+  }
+  
+  .form-inline input:focus,
+  .form-inline select:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-color: var(--primary-color);
+  }
+  
+  .form-inline button {
+  padding: 6px var(--spacing-medium);
+  font-weight: 700;
+  }
+  
+  /* Sales Section Specific */
+  .sales-overview-table {
+  width: auto;
+  /* Auto width for summary */
+  margin-bottom: var(--spacing-large);
+  /* Add space below summary */
+  }
+  
+  .sales-overview-table th,
+  .sales-overview-table td {
+  padding: var(--spacing-small) var(--spacing-medium);
+  }
+  
+  .sales-recent h2 {
+  margin-top: var(--spacing-large);
+  margin-bottom: var(--spacing-medium);
+  color: #1e273b;
+  }
+  
+  
+  /* Inventory Management specific */
+  .inventory-search-container {
+  display: flex;
+  gap: var(--spacing-small);
+  margin-bottom: var(--spacing-medium);
+  align-items: center;
+  }
+  
+  .inventory-search-container input {
+  padding: 8px 12px;
+  font-size: 1rem;
+  flex-grow: 1;
+  max-width: 350px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  }
+  
+  .inventory-search-container input:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  border-color: var(--primary-color);
+  }
+  
+  .inventory-search-container button {
+  padding: 8px 12px;
+  font-size: 1rem;
+  }
+  
+  
+  #inventoryForm {
+  margin-bottom: var(--spacing-large);
+  }
+  
+  #inventoryTableBody td:last-child {
+  display: flex;
+  gap: var(--spacing-x-small);
+  }
+  
+  
+  /* Utility classes */
+  .hidden {
+  display: none;
+  }
+  
+  .active-section {
+  display: block;
+  /* Ensure active section is displayed */
+  }
+  
+  .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  }
+  
+  
+  /* Basic Responsiveness */
+  @media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    /* Row layout for smaller screens */
+    justify-content: space-around;
+    /* Distribute items */
+    padding: var(--spacing-medium) 0;
+    box-shadow: 0 2px 5px var(--shadow-color);
+  }
+  
+  .logo {
+    display: none;
+    /* Hide logo on small screens */
+  }
+  
+  .nav-item {
+    padding: var(--spacing-small);
+    border-left: none;
+    border-bottom: 4px solid transparent;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  .nav-item:hover {
+    border-left: none;
+    border-bottom: 4px solid var(--primary-color);
+  }
+  
+  .nav-item.active {
+    border-left: none;
+    border-bottom: 4px solid var(--primary-color);
+  }
+  
+  .main-content {
+    padding: var(--spacing-medium);
+  }
+  
+  /* Dashboard Responsiveness */
+  .dashboard-overview {
+    grid-template-columns: 1fr;
+    /* Stack cards on small screens */
+  }
+  
+  .form-inline {
+    flex-direction: column;
+    gap: var(--spacing-small);
+    padding: var(--spacing-small);
+  }
+  
+  .form-inline label {
+    min-width: auto;
+    align-self: flex-start;
+  }
+  
+  .form-inline input,
+  .form-inline select {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .form-inline button {
+    width: 100%;
+  }
+  
+  /* Inventory Search Responsiveness */
+  .inventory-search-container {
+    flex-direction: column;
+    gap: var(--spacing-small);
+  }
+  
+  .inventory-search-container input,
+  .inventory-search-container button {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+  
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  tr {
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-medium);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+  }
+  
+  td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  /* Specific data labels for each table */
+  #apptTableBody td:nth-of-type(1):before {
+    content: "Customer:";
+  }
+  
+  #apptTableBody td:nth-of-type(2):before {
+    content: "Pet:";
+  }
+  
+  #apptTableBody td:nth-of-type(3):before {
+    content: "Service:";
+  }
+  
+  #apptTableBody td:nth-of-type(4):before {
+    content: "Date & Time:";
+  }
+  
+  #apptTableBody td:nth-of-type(5):before {
+    content: "Status:";
+  }
+  
+  #apptTableBody td:nth-of-type(6):before {
+    content: "Price:"; /* Added Price Data Label */
+  }
+  
+  #apptTableBody td:nth-of-type(7):before {
+    content: "Actions:";
+  }
+  
+  
+  .sales-table tbody td:nth-of-type(1):before {
+    content: "Invoice #:";
+  }
+  
+  .sales-table tbody td:nth-of-type(2):before {
+    content: "Date:";
+  }
+  
+  .sales-table tbody td:nth-of-type(3):before {
+    content: "Customer:";
+  }
+  
+  .sales-table tbody td:nth-of-type(4):before {
+    content: "Service:";
+  }
+  
+  .sales-table tbody td:nth-of-type(5):before {
+    content: "Amount:";
+  }
+  
+  #inventoryTableBody td:nth-of-type(1):before {
+    content: "Item:";
+  }
+  
+  #inventoryTableBody td:nth-of-type(2):before {
+    content: "Quantity:";
+  }
+  
+  #inventoryTableBody td:nth-of-type(3):before {
+    content: "Actions:";
+  }
+  
+  #recordTableBody td:nth-of-type(1):before {
+    content: "Customer:";
+  }
+  
+  #recordTableBody td:nth-of-type(2):before {
+    content: "Pet:";
+  }
+  
+  #recordTableBody td:nth-of-type(3):before {
+    content: "Notes:";
+  }
+  
+  #recordTableBody td:nth-of-type(4):before {
+    content: "Actions:";
+  }
+  
+  #staffTableBody td:nth-of-type(1):before {
+    content: "Name:";
+  }
+  
+  #staffTableBody td:nth-of-type(2):before {
+    content: "Role:";
+  }
+  
+  #staffTableBody td:nth-of-type(3):before {
+    content: "Availability:";
+  }
+  
+  #staffTableBody td:nth-of-type(4):before {
+    content: "Actions:";
+  }
+  
+   #userTableBody td:nth-of-type(1):before {
+    content: "Name:";
+  }
+  
+  #userTableBody td:nth-of-type(2):before {
+    content: "Role:";
+  }
+  
+   #userTableBody td:nth-of-type(3):before {
+    content: "Password:"; /* Added data-label for Password */
+  }
+  
+  #userTableBody td:nth-of-type(4):before {
+    content: "Actions:";
+  }
+  
+  
+  /* Specific data labels for activity table on small screens */
+  .activity-table tbody td:nth-of-type(1):before {
+    content: "Type:";
+  }
+  .activity-table tbody td:nth-of-type(2):before {
+    content: "Details:";
+  }
+  .activity-table tbody td:nth-of-type(3):before {
+    content: "Time:";
+  }
+  
+  
+  #inventoryTableBody td:last-child,
+  #staffTableBody td:last-child,
+  #userTableBody td:last-child {
+    justify-content: flex-end;
+    /* Align buttons to the right */
+  }
+  
+  /* Adjust button container padding for responsive tables */
+   td:last-child {
+       padding-top: 10px; /* Add a little space above buttons */
+       padding-bottom: 10px; /* Add a little space below buttons */
+   }
+  
+  
+  }
+  
+  /* Record Management Sections */
+  .record-sections-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .record-section {
+  background: white;
+  padding: var(--spacing-large);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  height: fit-content;
+  }
+  
+  .record-section h2 {
+  color: var(--primary-color);
+  margin-top: 0;
+  margin-bottom: var(--spacing-medium);
+  font-size: 1.5rem;
+  }
+  
+  .record-section .form-inline {
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .record-section table {
+  margin-top: var(--spacing-medium);
+  }
+  
+  .record-section .actions-column {
+  width: 150px;
+  text-align: center;
+  }
+  
+  .record-section {
+  display: none;
+  }
+  
+  .record-section.active {
+  display: block;
+  }
+  
+  #pet-records {
+  display: block; /* Show this section by default */
+  }
+  
+  .record-nav {
+  margin-bottom: 20px;
+  }
+  
+  .record-nav-btn {
+  padding: 8px 16px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  }
+  
+  .record-nav-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+  }
+  
+  /* Staff and User Management specific styles */
+  #staffForm,
+  #userForm {
+  background-color: var(--secondary-color);
+  padding: var(--spacing-medium);
+  border-radius: 5px;
+  margin-bottom: var(--spacing-large);
+  }
+  
+  #staffForm label,
+  #userForm label {
+  font-weight: 600;
+  color: var(--text-color);
+  }
+  
+  #staffForm input,
+  #userForm input,
+  #staffForm select,
+  #userForm select {
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  border-radius: 4px;
+  }
+  
+  #staffForm input:focus,
+  #userForm input:focus,
+  #staffForm select:focus,
+  #userForm select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.2);
+  }
+  
+  /* Responsive styles for record sections */
+  @media (max-width: 1200px) {
+  .record-sections-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  }
+  
+  @media (max-width: 768px) {
+  .record-sections-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .record-section {
+    padding: var(--spacing-medium);
+  }
+  
+  .record-section .form-inline {
+    flex-direction: column;
+    gap: var(--spacing-small);
+  }
+  
+  .record-section .form-inline label {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  
+  .record-section .form-inline input,
+  .record-section .form-inline select {
+    width: 100%;
+  }
+  
+  .record-section .form-inline button {
+    width: 100%;
+    margin-top: var(--spacing-small);
+  }
+  }
+  
+  /* Record Management Navigation */
+  .record-nav {
+  display: flex;
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: var(--spacing-small);
+  }
+  
+  .record-nav-btn {
+  padding: var(--spacing-medium) var(--spacing-large);
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+  }
+  
+  .record-nav-btn:hover {
+  color: var(--primary-color);
+  }
+  
+  .record-nav-btn.active {
+  color: var(--primary-color);
+  }
+  
+  .record-nav-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+  }
+  
+  /* Record Sections */
+  .section {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  }
+  
+  .section.active-section {
+  display: block;
+  opacity: 1;
+  }
+  
+  .record-section {
+  background: white;
+  padding: var(--spacing-large);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .record-section.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  }
+  
+  /* Responsive styles for record navigation */
+  @media (max-width: 768px) {
+  .record-nav {
+    flex-direction: column;
+    gap: var(--spacing-small);
+    border-bottom: none;
+  }
+  
+  .record-nav-btn {
+    width: 100%;
+    text-align: left;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+  }
+  
+  .record-nav-btn.active::after {
+    display: none;
+  }
+  
+  .record-nav-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  }
+  
+  /* Transaction Section Styles */
+  .transaction-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .summary-card {
+  background: var(--secondary-color);
+  padding: var(--spacing-medium);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  }
+  
+  .summary-card h3 {
+  margin: 0 0 var(--spacing-small);
+  color: var(--text-color);
+  font-size: 1rem;
+  }
+  
+  .summary-card p {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  }
+  
+  /* Activity Logs Section Styles */
+  .activity-filters {
+  display: flex;
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  align-items: center;
+  flex-wrap: wrap;
+  }
+  
+  .activity-filter {
+  padding: var(--spacing-small) var(--spacing-medium);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  }
+  
+  .activity-filter:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.2);
+  }
+  
+  #filterActivityBtn {
+  padding: var(--spacing-small) var(--spacing-large);
+  }
+  
+  /* Responsive styles for new sections */
+  @media (max-width: 768px) {
+  .transaction-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .activity-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .activity-filter {
+    width: 100%;
+  }
+  
+  #filterActivityBtn {
+    width: 100%;
+  }
+  }
+  
+  /* Sales Section Styles */
+  .sales-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .sales-summary .summary-card {
+  background: white;
+  padding: var(--spacing-medium);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  text-align: center;
+  }
+  
+  .sales-summary .summary-card h3 {
+  margin: 0 0 var(--spacing-small);
+  color: var(--text-color);
+  font-size: 1rem;
+  }
+  
+  .sales-summary .summary-card p {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  }
+  
+  .trend-indicator {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: var(--spacing-small);
+  }
+  
+  .trend-indicator.positive {
+  color: #28a745;
+  }
+  
+  .trend-indicator.negative {
+  color: #dc3545;
+  }
+  
+  /* Sales Filters */
+  .sales-filters {
+  background: white;
+  padding: var(--spacing-medium);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .date-range {
+  display: flex;
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-medium);
+  align-items: center;
+  }
+  
+  .date-range label {
+  font-weight: 600;
+  color: var(--text-color);
+  }
+  
+  .date-range input {
+  padding: var(--spacing-small);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  }
+  
+  .filter-options {
+  display: flex;
+  gap: var(--spacing-medium);
+  align-items: center;
+  }
+  
+  .filter-options select {
+  padding: var(--spacing-small) var(--spacing-medium);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-width: 150px;
+  }
+  
+  /* Sales Statistics */
+  .sales-statistics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .stat-card {
+  background: white;
+  padding: var(--spacing-medium);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  }
+  
+  .stat-card h3 {
+  margin: 0 0 var(--spacing-medium);
+  color: var(--text-color);
+  font-size: 1.1rem;
+  }
+  
+  .stat-content {
+  min-height: 150px;
+  }
+  
+  /* Sales Tables */
+  .sales-table-container,
+  .sales-summary-table {
+  background: white;
+  padding: var(--spacing-medium);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  margin-bottom: var(--spacing-large);
+  }
+  
+  .sales-table-container h2,
+  .sales-summary-table h2 {
+  margin: 0 0 var(--spacing-medium);
+  color: var(--text-color);
+  font-size: 1.3rem;
+  }
+  
+  /* Responsive styles for Sales section */
+  @media (max-width: 1200px) {
+  .sales-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .sales-statistics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  }
+  
+  @media (max-width: 768px) {
+  .sales-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .sales-statistics {
+    grid-template-columns: 1fr;
+  }
+  
+  .sales-filters {
+    padding: var(--spacing-small);
+  }
+  
+  .date-range {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-options {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-options select,
+  .filter-options button {
+    width: 100%;
+  }
+  }
+  
+  /* Profile Section Styles */
+  .profile-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  padding: var(--spacing-large);
+  }
+  
+  .profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-large);
+  margin-bottom: var(--spacing-large);
+  padding-bottom: var(--spacing-large);
+  border-bottom: 1px solid var(--border-color);
+  }
+  
+  .profile-avatar {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  }
+  
+  .profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-color);
+  }
+  
+  .change-avatar-btn {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary-color);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+  }
+  
+  .profile-avatar:hover .change-avatar-btn {
+  opacity: 1;
+  }
+  
+  .profile-info h2 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.8rem;
+  }
+  
+  .profile-info p {
+  margin: 4px 0 0;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  }
+  
+  .profile-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-large);
+  }
+  
+  .profile-section {
+  background: var(--secondary-color);
+  padding: var(--spacing-large);
+  border-radius: 8px;
+  }
+  
+  .profile-section h3 {
+  margin: 0 0 var(--spacing-medium);
+  color: var(--text-color);
+  font-size: 1.2rem;
+  }
+  
+  .profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+  }
+  
+  .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  }
+  
+  .form-group label {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="tel"],
+  .form-group input[type="password"] {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  }
+  
+  .form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.2);
+  }
+  
+  .checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  }
+  
+  .checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  }
+  
+  .checkbox-group label {
+  cursor: pointer;
+  }
+  
+  .save-btn {
+  background: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: var(--spacing-small);
+  }
+  
+  .save-btn:hover {
+  background: #006666;
+  }
+  
+  /* Responsive styles for Profile section */
+  @media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-medium);
+  }
+  
+  .profile-avatar {
+    margin: 0 auto;
+  }
+  
+  .profile-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-section {
+    padding: var(--spacing-medium);
+  }
+  }
+  
+  /* Personal Information Card Styles */
+  .personal-info-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin: 24px 0 32px 0;
+  padding: 32px 24px 32px 24px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid var(--border-color);
+  }
+  .personal-info-title {
+  color: var(--primary-color);
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 18px;
+  }
+  .personal-info-list {
+  text-align: center;
+  }
+  .personal-info-list p {
+  font-size: 1.15rem;
+  margin: 18px 0 0 0;
+  }
+  .personal-info-list strong {
+  font-weight: 700;
+  margin-right: 6px;
+  }
+  @media (max-width: 600px) {
+  .personal-info-card {
+    padding: 18px 6px;
+  }
+  .personal-info-title {
+    font-size: 1.3rem;
+  }
+  .personal-info-list p {
+    font-size: 1rem;
+  }
+  }
+  
+  /* Settings Section Styles */
+  .settings-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  padding: var(--spacing-large);
+  }
+  
+  .settings-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-large);
+  }
+  
+  .settings-section {
+  background: var(--secondary-color);
+  padding: var(--spacing-large);
+  border-radius: 8px;
+  }
+  
+  .settings-section h3 {
+  margin: 0 0 var(--spacing-medium);
+  color: var(--text-color);
+  font-size: 1.2rem;
+  }
+  
+  .settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+  }
+  
+  /* Responsive styles for Settings section */
+  @media (max-width: 768px) {
+  .settings-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .settings-section {
+    padding: var(--spacing-medium);
+  }
+  }

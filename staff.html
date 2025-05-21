@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - Pet Grooming Salon</title>
+    <link rel="stylesheet" href="staff.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      /* Enhanced styles for the Profile section */
+      .profile-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center; /* Center content horizontally */
+          background-color: white;
+          padding: var(--spacing-large);
+          border-radius: 8px; /* Slightly more rounded corners */
+          box-shadow: 0 2px 8px var(--shadow-color); /* Stronger shadow */
+          max-width: 500px; /* Adjust max width */
+          margin: var(--spacing-large) auto; /* Center the profile card and add more margin */
+          text-align: center; /* Center text within the container */
+      }
+
+      .profile-avatar {
+          width: 120px; /* Increased avatar size */
+          height: 120px;
+          border-radius: 50%; /* Make it round */
+          object-fit: cover; /* Ensure image covers the area */
+          margin-bottom: var(--spacing-large); /* Space below avatar */
+          border: 3px solid var(--primary-color); /* Add a border */
+      }
+
+      .profile-name {
+          font-size: 1.8em; /* Larger name font */
+          margin-bottom: var(--spacing-small);
+          color: var(--text-color);
+      }
+
+      .profile-role {
+          font-size: 1.1em;
+          color: var(--secondary-text-color);
+          margin-bottom: var(--spacing-large); /* Space below role */
+      }
+
+      .profile-details-grid {
+          display: grid;
+          grid-template-columns: auto 1fr; /* Auto width for labels, fill space for values */
+          gap: var(--spacing-medium) var(--spacing-large); /* Gap between rows and columns */
+          text-align: left; /* Align detail text to the left */
+          width: 100%; /* Use full width of the container */
+          max-width: 350px; /* Limit the width of the details grid */
+      }
+
+      .profile-details-grid label {
+          font-weight: bold;
+          color: #555;
+      }
+
+      .profile-details-grid p {
+          margin: 0;
+          color: var(--text-color);
+      }
+
+      .profile-details-grid input {
+          padding: 8px;
+          border: 1px solid var(--border-color);
+          border-radius: 4px;
+          width: 100%;
+          font-size: 1em;
+      }
+
+      .profile-details-grid input:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+      }
+
+      .btn-primary {
+          background-color: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 1em;
+          transition: background-color 0.2s;
+      }
+
+      .btn-primary:hover {
+          background-color: var(--primary-dark-color);
+      }
+
+      .btn-secondary {
+          background-color: #f0f0f0;
+          color: #333;
+          border: 1px solid #ddd;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 1em;
+          margin-left: 8px;
+          transition: background-color 0.2s;
+      }
+
+      .btn-secondary:hover {
+          background-color: #e0e0e0;
+      }
+
+      #profileLoadingState {
+          text-align: center;
+          padding: 20px;
+          color: var(--secondary-text-color);
+      }
+
+      #profileErrorState {
+          text-align: center;
+          padding: 10px;
+          margin: 10px 0;
+          background-color: #fff2f2;
+          border: 1px solid #ffcdd2;
+          border-radius: 4px;
+      }
+
+       /* Add a class to hide elements based on role */
+       .admin-only {
+           display: none !important;
+       }
+
+       /* Make sure the modal is on top */
+      .modal {
+            z-index: 1000;
+        }
+
+        /* Basic styles for Feedback section */
+        .feedback-item {
+            border: 1px solid #ddd;
+            padding: var(--spacing-medium);
+            margin-bottom: var(--spacing-medium);
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .feedback-item h3 {
+            margin-top: 0;
+            margin-bottom: var(--spacing-small);
+            color: #333;
+        }
+
+        .feedback-item p {
+            margin-bottom: var(--spacing-small);
+        }
+
+         .feedback-item .meta {
+            font-size: 0.9em;
+            color: #777;
+         }
+
+         .feedback-item .actions {
+             margin-top: var(--spacing-small);
+         }
+
+          /* Style for Notes in Records table */
+         .record-notes {
+             white-space: pre-wrap; /* Preserve line breaks and wrap text */
+         }
+
+          /* Style for the Record Management Form */
+         #recordForm {
+             margin-bottom: var(--spacing-large);
+             padding: var(--spacing-medium);
+             background-color: #eef; /* Light blue background for the form */
+             border-radius: 4px;
+             border: 1px solid #ccf;
+         }
+
+         #recordForm label {
+             display: block;
+             margin-bottom: var(--spacing-small);
+             font-weight: bold;
+         }
+
+          #recordForm input[type="text"],
+          #recordForm textarea {
+              width: calc(100% - 16px); /* Adjust for padding */
+              padding: 8px;
+              margin-bottom: var(--spacing-medium);
+              border: 1px solid #ccc;
+              border-radius: 4px;
+          }
+
+           #recordForm textarea {
+               min-height: 100px; /* Give more space for notes */
+               resize: vertical; /* Allow vertical resizing */
+           }
+
+           #recordForm button {
+               padding: 10px 20px;
+               background-color: var(--primary-color);
+               color: white;
+               border: none;
+               border-radius: 4px;
+               cursor: pointer;
+               transition: background-color 0.2s ease;
+           }
+
+            #recordForm button:hover {
+                background-color: var(--primary-dark-color);
+            }
+
+             /* Add some spacing between form and table */
+            #records table {
+                margin-top: var(--spacing-large);
+            }
+
+      /* Styles for Appointment Tables */
+      .appointments-section h3 {
+          color: var(--primary-color);
+          margin: 2rem 0 1rem;
+          font-size: 1.3em;
+      }
+
+      .appointments-section table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 2rem;
+          background-color: white;
+          box-shadow: 0 2px 8px var(--shadow-color);
+          border-radius: 8px;
+      }
+
+      .appointments-section th,
+      .appointments-section td {
+          padding: 12px;
+          text-align: left;
+          border-bottom: 1px solid #eee;
+      }
+
+      .appointments-section th {
+          background-color: #f8f9fa;
+          font-weight: 600;
+      }
+
+      .appointments-section tbody tr:hover {
+          background-color: #f8f9fa;
+      }
+
+      .appointments-section .actions-column {
+          width: 150px;
+      }
+
+      .appointments-section button {
+          padding: 6px 12px;
+          margin: 0 4px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          background-color: var(--primary-color);
+          color: white;
+          transition: background-color 0.2s;
+      }
+
+      .appointments-section button:hover {
+          background-color: var(--primary-dark-color);
+      }
+
+      .appointments-section button.danger {
+          background-color: #dc3545;
+      }
+
+      .appointments-section button.danger:hover {
+          background-color: #bd2130;
+      }
+
+      .mt-4 {
+          margin-top: 2rem;
+      }
+
+      .center-text {
+          text-align: center;
+      }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <img src="logo.png" alt="Pet Grooming Salon Logo" class="logo">
+        <nav>
+            <ul>
+                <li class="nav-item active" data-section="profile">Profile</li>
+                <li class="nav-item" data-section="appointments">Appointments</li>
+            </ul>
+        </nav>
+        <div class="nav-item logout-item" id="logoutBtn">Log Out</div>
+    </aside>
+
+    <main class="main-content">
+        <!-- Profile Section -->
+        <section id="profile" class="section profile-section">
+            <h1 class="section-title">My Profile</h1>
+            <div class="profile-container">
+                <h2 class="profile-name" id="profileName">Personal Information</h2>
+                <div id="profileLoadingState" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading profile...</p>
+                </div>
+                <div id="profileErrorState" style="display: none; color: red;"></div>
+                <div id="profileViewMode">
+                    <div class="profile-details-grid">
+                        <label>Full Name:</label>
+                        <p id="profileFullName">Loading...</p>
+                        
+                        <label>Email:</label>
+                        <p id="profileEmail">Loading...</p>
+                        
+                        <label>Phone:</label>
+                        <p id="profilePhone">Loading...</p>
+                        
+                        <label>Address:</label>
+                        <p id="profileAddress">Loading...</p>
+                        
+                        <label>Role:</label>
+                        <p id="profileRole">Loading...</p>
+                    
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appointment Management Section -->
+        <section id="appointments" class="section appointments-section">
+            <h1 class="section-title">Appointments</h1>
+            
+            <!-- Transaction Table -->
+            <table aria-describedby="transactionTableDesc">
+                <caption id="transactionTableDesc">Appointments Overview</caption>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Pet</th>
+                        <th>Service</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTableBody">
+                    <!-- dynamic transaction rows -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Record Management Section -->
+        <section id="records" class="section records-section">
+            <h1 class="section-title">Record Management</h1>
+            <table>
+                <caption>Pet Records</caption>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Pet</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="recordTableBody">
+                    <tr><td colspan="4" class="center-text">Loading records...</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Completed Appointments Section -->
+            <div class="appointment-section">
+                <h2 class="section-subtitle">Completed Appointments</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Pet</th>
+                            <th>Service</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="completedApptTableBody">
+                        <tr><td colspan="5" class="center-text">Loading completed appointments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Customers Feedback Section -->
+        <section id="feedback" class="section" hidden aria-hidden="true">
+            <h1 class="section-title">Customer Feedback Assigned to You</h1> <!-- Updated title -->
+
+            <!-- Maybe a form to add internal notes about feedback received verbally? -->
+            <!-- For now, let's just display feedback -->
+            <div id="feedbackList">
+                <!-- Feedback items will be loaded here by JS -->
+                <p class="center-text">Loading feedback...</p>
+            </div>
+
+        </section>
+
+    </main>
+
+     <!-- Confirmation Modal for Logout -->
+    <div id="confirmationModal" class="modal" role="dialog" aria-modal="true" hidden aria-hidden="true">
+        <div class="modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <div class="modal-buttons">
+                <button id="confirmLogoutBtn" type="button">Yes, Log Out</button>
+                <button id="cancelLogoutBtn" class="secondary" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase configuration
+        const supabaseUrl = 'https://zehjuqavoktgxjqwcqpo.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaGp1cWF2b2t0Z3hqcXdjcXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDA2ODAsImV4cCI6MjA2MTc3NjY4MH0.n2Nb0QgaZFVW4zC0NyQGAy38tka_gwkhiTrBC8rU-GM';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userRole = localStorage.getItem('userRole');
+
+            if (!isLoggedIn || userRole !== 'staff') {
+                alert('Unauthorized access. Please login.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Initialize the dashboard
+            initializeDashboard();
+            setupNavigation();
+        });
+
+        // Setup navigation
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const sections = document.querySelectorAll('.section');
+
+            // Hide all sections except profile initially
+            sections.forEach(section => {
+                if (section.id !== 'profile') {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Add click event listeners to nav items
+            navItems.forEach(item => {
+                if (item.id !== 'logoutBtn') { // Skip logout button
+                    item.addEventListener('click', () => {
+                        // Remove active class from all nav items
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        // Add active class to clicked item
+                        item.classList.add('active');
+
+                        // Hide all sections
+                        sections.forEach(section => {
+                            section.style.display = 'none';
+                        });
+
+                        // Show the selected section
+                        const sectionId = item.getAttribute('data-section');
+                        const selectedSection = document.getElementById(sectionId);
+                        if (selectedSection) {
+                            selectedSection.style.display = 'block';
+                        }
+                    });
+                }
+            });
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            const modal = document.getElementById('confirmationModal');
+            modal.hidden = false;
+            modal.style.display = 'flex';
+        });
+
+        // Handle logout confirmation
+        document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
+            // Clear all localStorage items
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('email');
+            // Redirect to login page
+            window.location.href = 'login.html';
+        });
+
+        // Handle logout cancellation
+        document.getElementById('cancelLogoutBtn').addEventListener('click', () => {
+            const modal = document.getElementById('confirmationModal');
+            modal.hidden = true;
+            modal.style.display = 'none';
+        });
+
+        // Close modal if clicking outside
+        document.getElementById('confirmationModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('confirmationModal')) {
+                e.target.hidden = true;
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !document.getElementById('confirmationModal').hidden) {
+                document.getElementById('confirmationModal').hidden = true;
+                document.getElementById('confirmationModal').style.display = 'none';
+            }
+        });
+
+        // Initialize dashboard function
+        async function initializeDashboard() {
+            // Load profile
+            await loadProfile();
+            // Load transactions
+            loadTransactions();
+        }
+
+        // Function to load profile data
+        async function loadProfile() {
+            const profileLoadingState = document.getElementById('profileLoadingState');
+            const profileErrorState = document.getElementById('profileErrorState');
+            const profileViewMode = document.getElementById('profileViewMode');
+            
+            try {
+                profileLoadingState.style.display = 'flex';
+                profileErrorState.style.display = 'none';
+                profileViewMode.style.display = 'none';
+
+                const email = localStorage.getItem('email');
+                if (!email) {
+                    throw new Error('No email found in session');
+                }
+
+                const { data: staffData, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('role', 'staff')
+                    .single();
+
+                if (error) {
+                    throw error;
+                }
+
+                if (staffData) {
+                    // Update all profile fields
+                    document.getElementById('profileFullName').textContent = staffData.full_name || 'Not set';
+                    document.getElementById('profileEmail').textContent = staffData.email;
+                    document.getElementById('profilePhone').textContent = staffData.phone_number || 'Not set';
+                    document.getElementById('profileAddress').textContent = staffData.address || 'Not set';
+                    document.getElementById('profileRole').textContent = staffData.role || 'Staff';
+                }
+
+                profileViewMode.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                profileErrorState.textContent = 'Error loading profile: ' + error.message;
+                profileErrorState.style.display = 'block';
+            } finally {
+                profileLoadingState.style.display = 'none';
+            }
+        }
+
+        // Function to render Transactions
+        async function loadTransactions() {
+            try {
+                // Fetch appointments from newAppointments
+                const { data: appointments, error } = await supabase
+                    .from('newAppointments')
+                    .select('*')
+                    .order('appointmentDate', { ascending: false });
+
+                if (error) {
+                    console.error('Error fetching appointments:', error);
+                    throw error;
+                }
+
+                const transactionTableBody = document.getElementById('transactionTableBody');
+                if (!transactionTableBody) {
+                    console.error('Transaction table body element not found');
+                    return;
+                }
+
+                if (!appointments || appointments.length === 0) {
+                    transactionTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No transactions found.</td></tr>';
+                    return;
+                }
+
+                transactionTableBody.innerHTML = appointments.map(appt => {
+                    return `
+                        <tr>
+                            <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
+                            <td data-label="Customer">
+                                <div class="customer-info">
+                                    <div><strong>Name:</strong> ${appt.customer || appt.fullName || appt.name || 'N/A'}</div>
+                                    <div><strong>Email:</strong> ${appt.email || 'N/A'}</div>
+                                    <div><strong>Phone:</strong> ${appt.phone || 'N/A'}</div>
+                                </div>
+                            </td>
+                            <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
+                            <td data-label="Service">${appt.serviceType || 'N/A'}</td>
+                            <td data-label="Amount">₱${appt.price ? appt.price.toFixed(2) : '0.00'}</td>
+                            <td data-label="Status">${appt.status || 'N/A'}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                const transactionTableBody = document.getElementById('transactionTableBody');
+                if (transactionTableBody) {
+                    transactionTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Error loading transactions. Please try again.</td></tr>';
+                }
+            }
+        }
+
+        // Add loading spinner styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid var(--primary-color);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 20px auto;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            #profileLoadingState {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script src="staff.js"></script>
+</body>
+</html>

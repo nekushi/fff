@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Grooming Dashboard Login</title>
+    <!-- Link to your separate CSS file -->
+    <link rel="stylesheet" href="login.css">
+    <!-- Add Supabase JavaScript library -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        .login-help {
+            font-size: 0.8em;
+            color: #666;
+            margin: 5px 0 15px 0;
+            padding: 5px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .login-help p {
+            margin: 3px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- --- HTML BODY CONTENT STARTS HERE --- -->
+
+    <div class="login-container">
+        <img src="/img/logo.png" alt="Back" class="logo" />
+        <form id="loginForm" class="login-form">
+            <label for="username">Email:</label>
+            <input type="text" id="username" name="username" required placeholder="Enter email">
+
+            <label for="password">Password:</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" required class="password-input" placeholder="Enter password">
+                <span id="togglePassword" class="toggle-password">
+                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="gray"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 3.866-4.477 7-10 7S1 15.866 1 12 5.477 5 12 5s11 3.134 11 7z"/></svg>
+                </span>
+            </div>
+
+            <div class="button-container">
+                <button type="button" id="staffLoginBtn" class="login-button">Staff Login</button>
+                <button type="button" id="adminLoginBtn" class="login-button">Admin Login</button>
+            </div>
+        </form>
+        <div class="login-footer">
+            <!-- Optional: <a href="#">Forgot Password?</a> -->
+        </div>
+    </div>
+
+    <!-- --- HTML BODY CONTENT ENDS HERE --- -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            
+            // Supabase config
+            const supabaseUrl = 'https://zehjuqavoktgxjqwcqpo.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaGp1cWF2b2t0Z3hqcXdjcXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDA2ODAsImV4cCI6MjA2MTc3NjY4MH0.n2Nb0QgaZFVW4zC0NyQGAy38tka_gwkhiTrBC8rU-GM';
+            
+            let supabase;
+            try {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log('Supabase client initialized successfully');
+
+                // Check and create default users if they don't exist
+                const initializeUsers = async () => {
+                    try {
+                        // Check if admin user exists
+                        const { data: existingAdmin, error: checkAdminError } = await supabase
+                            .from('users')
+                            .select('*')
+                            .eq('email', 'admin@poochpurrfect.com')
+                            .maybeSingle();
+
+                        if (checkAdminError) {
+                            console.error('Error checking admin user:', checkAdminError);
+                            return;
+                        }
+
+                        // If admin doesn't exist, create it
+                        if (!existingAdmin) {
+                            console.log('Creating admin user...');
+                            const { data: newAdmin, error: createAdminError } = await supabase
+                                .from('users')
+                                .insert([
+                                    {
+                                        email: 'admin@poochpurrfect.com',
+                                        password: 'admin123',
+                                        role: 'admin'
+                                    }
+                                ])
+                                .select();
+
+                            if (createAdminError) {
+                                console.error('Error creating admin user:', createAdminError);
+                            } else {
+                                console.log('Admin user created successfully:', newAdmin);
+                            }
+                        } else {
+                            console.log('Admin user already exists:', existingAdmin);
+                        }
+
+                        // Check if staff user exists
+                        const { data: existingStaff, error: checkStaffError } = await supabase
+                            .from('users')
+                            .select('*')
+                            .eq('email', 'staff@poochpurrfect.com')
+                            .maybeSingle();
+
+                        if (checkStaffError) {
+                            console.error('Error checking staff user:', checkStaffError);
+                            return;
+                        }
+
+                        // If staff doesn't exist, create it
+                        if (!existingStaff) {
+                            console.log('Creating staff user...');
+                            const { data: newStaff, error: createStaffError } = await supabase
+                                .from('users')
+                                .insert([
+                                    {
+                                        email: 'staff@poochpurrfect.com',
+                                        password: 'staff123',
+                                        role: 'staff'
+                                    }
+                                ])
+                                .select();
+
+                            if (createStaffError) {
+                                console.error('Error creating staff user:', createStaffError);
+                            } else {
+                                console.log('Staff user created successfully:', newStaff);
+                            }
+                        } else {
+                            console.log('Staff user already exists:', existingStaff);
+                        }
+                    } catch (err) {
+                        console.error('Error in initializeUsers:', err);
+                    }
+                };
+
+                // Call the initialization function
+                initializeUsers();
+            } catch (error) {
+                console.error('Error initializing Supabase client:', error);
+                alert('Error initializing the application. Please refresh the page.');
+                return;
+            }
+
+            // Get button elements
+            const staffLoginBtn = document.getElementById('staffLoginBtn');
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            const loginForm = document.getElementById('loginForm');
+
+            console.log('Buttons found:', { 
+                staffLoginBtn: !!staffLoginBtn, 
+                adminLoginBtn: !!adminLoginBtn 
+            });
+
+            // Function to handle login
+            async function handleLogin(userType) {
+                console.log(`Handling ${userType} login`);
+                
+                const email = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    alert('Please enter both email and password');
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('password', password)
+                        .eq('role', userType)
+                        .maybeSingle();
+
+                    console.log('Login attempt result:', { data, error });
+
+                    if (error) throw error;
+
+                    if (data) {
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userRole', userType);
+                        localStorage.setItem('email', email);
+                        
+                        alert(`${userType.charAt(0).toUpperCase() + userType.slice(1)} login successful!`);
+                        window.location.href = `${userType}.html`;
+                    } else {
+                        alert('Invalid email or password');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Login failed: ' + error.message);
+                }
+            }
+
+            // Add click event listeners
+            if (adminLoginBtn) {
+                adminLoginBtn.onclick = () => handleLogin('admin');
+            }
+            if (staffLoginBtn) {
+                staffLoginBtn.onclick = () => handleLogin('staff');
+            }
+
+            // Prevent form submission
+            if (loginForm) {
+                loginForm.onsubmit = (e) => e.preventDefault();
+            }
+
+            // Password visibility toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            if (togglePassword && passwordInput) {
+                togglePassword.onclick = () => {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+                    // Update eye icon
+                    const eyeIcon = document.getElementById('eyeIcon');
+                    if (eyeIcon) {
+                        eyeIcon.innerHTML = type === 'password' 
+                            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c0 3.866-4.477 7-10 7S1 15.866 1 12 5.477 5 12 5s11 3.134 11 7z"/>'
+                            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-3.134-10-7a6.978 6.978 0 012.293-5.042m3.06-2.197A9.956 9.956 0 0112 5c5.523 0 10 3.134 10 7 0 1.61-.793 3.122-2.164 4.355M15 12a3 3 0 11-6 0 3 3 0 016 0zm-6.364 6.364L19.07 4.93"/>';
+                    }
+                };
+            }
+        });
+    </script>
+
+</body>
+</html>
