@@ -278,6 +278,10 @@
       .center-text {
         text-align: center;
       }
+
+      .done-btn:hover {
+        background: #096464 !important;
+      }
     </style>
   </head>
   <body>
@@ -341,6 +345,7 @@
               <th>Service</th>
               <th>Amount</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody id="transactionTableBody">
@@ -640,6 +645,15 @@
         }
       }
 
+      async function markAsDone(id) {
+        const { data, error } = await supabase
+          .from("newAppointments")
+          .update({ status: "Complete" })
+          .eq("id", id);
+
+        window.location.reload();
+      }
+
       // Function to render Transactions
       async function loadTransactions() {
         try {
@@ -717,6 +731,11 @@
                         appt.price ? appt.price.toFixed(2) : "0.00"
                       }</td>
                       <td data-label="Status">${appt.status || "N/A"}</td>
+                      <td data-label="Status">
+                        <button class="done-btn" onclick="markAsDone(${
+                          appt.id
+                        })">Mark as Done</button>
+                      </td>
                   </tr>
               `;
             })
