@@ -347,6 +347,42 @@
             <!-- dynamic transaction rows -->
           </tbody>
         </table>
+        <table aria-describedby="transactionTableDesc">
+          <caption id="transactionTableDesc">
+            Completed Appointments
+          </caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBodyCompleted">
+            <!-- dynamic transaction rows -->
+          </tbody>
+        </table>
+        <table aria-describedby="transactionTableDesc">
+          <caption id="transactionTableDesc">
+            Cancelled Appointments
+          </caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBodyCancelled">
+            <!-- dynamic transaction rows -->
+          </tbody>
+        </table>
       </section>
 
       <!-- Record Management Section -->
@@ -613,6 +649,16 @@
             .select("*")
             .order("appointmentDate", { ascending: false });
 
+          const pendingAppointments = appointments.filter(
+            (appt) => appt.status === "Pending"
+          );
+          const completeAppointments = appointments.filter(
+            (appt) => appt.status === "Complete"
+          );
+          const cancelledAppointments = appointments.filter(
+            (appt) => appt.status === "Cancelled"
+          );
+
           if (error) {
             console.error("Error fetching appointments:", error);
             throw error;
@@ -620,6 +666,12 @@
 
           const transactionTableBody = document.getElementById(
             "transactionTableBody"
+          );
+          const transactionTableBodyCompleted = document.getElementById(
+            "transactionTableBodyCompleted"
+          );
+          const transactionTableBodyCancelled = document.getElementById(
+            "transactionTableBodyCancelled"
           );
           if (!transactionTableBody) {
             console.error("Transaction table body element not found");
@@ -632,45 +684,115 @@
             return;
           }
 
-          transactionTableBody.innerHTML = appointments
+          transactionTableBody.innerHTML = pendingAppointments
             .map((appt) => {
               return `
-                        <tr>
-                            <td data-label="Date">${
-                              appt.appointmentDate
-                                ? new Date(
-                                    appt.appointmentDate
-                                  ).toLocaleDateString()
-                                : "N/A"
-                            }</td>
-                            <td data-label="Customer">
-                                <div class="customer-info">
-                                    <div><strong>Name:</strong> ${
-                                      appt.customer ||
-                                      appt.fullName ||
-                                      appt.name ||
-                                      "N/A"
-                                    }</div>
-                                    <div><strong>Email:</strong> ${
-                                      appt.email || "N/A"
-                                    }</div>
-                                    <div><strong>Phone:</strong> ${
-                                      appt.phone || "N/A"
-                                    }</div>
-                                </div>
-                            </td>
-                            <td data-label="Pet">${
-                              appt.pet || appt.petName || "N/A"
-                            }</td>
-                            <td data-label="Service">${
-                              appt.serviceType || "N/A"
-                            }</td>
-                            <td data-label="Amount">₱${
-                              appt.price ? appt.price.toFixed(2) : "0.00"
-                            }</td>
-                            <td data-label="Status">${appt.status || "N/A"}</td>
-                        </tr>
-                    `;
+                  <tr>
+                      <td data-label="Date">${
+                        appt.appointmentDate
+                          ? new Date(appt.appointmentDate).toLocaleDateString()
+                          : "N/A"
+                      }</td>
+                      <td data-label="Customer">
+                          <div class="customer-info">
+                              <div><strong>Name:</strong> ${
+                                appt.customer ||
+                                appt.fullName ||
+                                appt.name ||
+                                "N/A"
+                              }</div>
+                              <div><strong>Email:</strong> ${
+                                appt.email || "N/A"
+                              }</div>
+                              <div><strong>Phone:</strong> ${
+                                appt.phone || "N/A"
+                              }</div>
+                          </div>
+                      </td>
+                      <td data-label="Pet">${
+                        appt.pet || appt.petName || "N/A"
+                      }</td>
+                      <td data-label="Service">${appt.serviceType || "N/A"}</td>
+                      <td data-label="Amount">₱${
+                        appt.price ? appt.price.toFixed(2) : "0.00"
+                      }</td>
+                      <td data-label="Status">${appt.status || "N/A"}</td>
+                  </tr>
+              `;
+            })
+            .join("");
+          transactionTableBodyCompleted.innerHTML = completeAppointments
+            .map((appt) => {
+              return `
+                  <tr>
+                      <td data-label="Date">${
+                        appt.appointmentDate
+                          ? new Date(appt.appointmentDate).toLocaleDateString()
+                          : "N/A"
+                      }</td>
+                      <td data-label="Customer">
+                          <div class="customer-info">
+                              <div><strong>Name:</strong> ${
+                                appt.customer ||
+                                appt.fullName ||
+                                appt.name ||
+                                "N/A"
+                              }</div>
+                              <div><strong>Email:</strong> ${
+                                appt.email || "N/A"
+                              }</div>
+                              <div><strong>Phone:</strong> ${
+                                appt.phone || "N/A"
+                              }</div>
+                          </div>
+                      </td>
+                      <td data-label="Pet">${
+                        appt.pet || appt.petName || "N/A"
+                      }</td>
+                      <td data-label="Service">${appt.serviceType || "N/A"}</td>
+                      <td data-label="Amount">₱${
+                        appt.price ? appt.price.toFixed(2) : "0.00"
+                      }</td>
+                      <td data-label="Status">${appt.status || "N/A"}</td>
+                  </tr>
+              `;
+            })
+            .join("");
+          transactionTableBodyCancelled.innerHTML = cancelledAppointments
+            .map((appt) => {
+              return `
+                  <tr>
+                      <td data-label="Date">${
+                        appt.appointmentDate
+                          ? new Date(appt.appointmentDate).toLocaleDateString()
+                          : "N/A"
+                      }</td>
+                      <td data-label="Customer">
+                          <div class="customer-info">
+                              <div><strong>Name:</strong> ${
+                                appt.customer ||
+                                appt.fullName ||
+                                appt.name ||
+                                "N/A"
+                              }</div>
+                              <div><strong>Email:</strong> ${
+                                appt.email || "N/A"
+                              }</div>
+                              <div><strong>Phone:</strong> ${
+                                appt.phone || "N/A"
+                              }</div>
+                          </div>
+                      </td>
+                      <td data-label="Pet">${
+                        appt.pet || appt.petName || "N/A"
+                      }</td>
+                      <td data-label="Service">${appt.serviceType || "N/A"}</td>
+                      <td data-label="Amount">₱${
+                        appt.price ? appt.price.toFixed(2) : "0.00"
+                      }</td>
+                      <td data-label="Status">${appt.status || "N/A"}</td>
+                  </tr>
+              `;
             })
             .join("");
         } catch (error) {
