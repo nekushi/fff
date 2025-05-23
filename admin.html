@@ -1046,7 +1046,7 @@
           // Sort services by count and get top 5
           const topServices = Object.entries(serviceCounts)
             .sort(([,a], [,b]) => b - a)
-            .slice(0, 5);
+            .slice(0, 3);
 
           console.log('Top services:', topServices);
 
@@ -1084,7 +1084,7 @@
               const tr = document.createElement('tr');
               tr.innerHTML = `
                 <td data-label="Pet">${appt.serviceType || 'N/A'}</td>
-                <td data-label="Service">${appt.price || 'N/A'}</td>
+                <td data-label="Service">₱${appt.price || 'N/A'}</td>
                 <td data-label="Date & Time"> </td>
                 <td data-label="Status"></td>
                 <td data-label="Price"></td>
