@@ -27,7 +27,7 @@
       aria-label="Dashboard Overview">Dashboard</div>
     <div class="nav-item" data-section="profile" tabindex="0" role="button" aria-pressed="false"
       aria-label="Profile">Profile</div>
-    <div class="nav-item" data-section="sales" tabindex="0" role="button" aria-pressed="false"
+    <div class="nav-item" data-section="sales" tabindex="0" role="button" aria-pressed="false" id="salesNavbar"
       aria-label="Sales Overview">Sales</div>
     <div class="nav-item" data-section="inventory" tabindex="0" role="button" aria-pressed="false"
       aria-label="Inventory Management">Inventory Management</div>
@@ -134,16 +134,16 @@
       </div>
 
       <!-- Sales Statistics -->
-      <!-- <div class="sales-statistics">
+      <div class="sales-statistics">
         <div class="stat-card stat-card-span-3">
           <h3>Top Services</h3>
           <div id="topServices" class="stat-content">
           </div>
         </div>
-      </div> -->
+      </div>
 
       <!-- Sales Table -->
-      <!-- <div class="sales-table-container">
+      <div class="sales-table-container">
         <h2>Sales Records</h2>
         <table class="sales-table" aria-describedby="salesTableDesc">
           <caption id="salesTableDesc">Detailed Sales Records</caption>
@@ -162,7 +162,7 @@
           <tbody id="salesTableBody">
           </tbody>
         </table>
-      </div> -->
+      </div>
 
       <!-- Sales Summary Table -->
       <div class="sales-summary-table">
@@ -977,7 +977,12 @@
           }, 0);
 
           // Count completed appointments
-          const completedCount = appointmentsArray.filter(a => a.status === 'Completed').length;
+          const completedCountLength = appointmentsArray.filter(a => a.status === 'Complete').length;
+          const completedCount = appointmentsArray.filter(a => a.status === 'Complete');
+
+          console.log(completedCount);
+          console.log(completedCountLength);
+
 
           // Calculate revenue for this month
           const now = new Date();
@@ -1013,7 +1018,7 @@
 
           // Update UI elements
           if (totalSalesEl) totalSalesEl.textContent = `₱${total.toFixed(2)}`;
-          if (apptsCompletedEl) apptsCompletedEl.textContent = completedCount;
+          if (apptsCompletedEl) apptsCompletedEl.textContent = completedCountLength;
           if (revenueMonthEl) revenueMonthEl.textContent = `₱${revenueThisMonth.toFixed(2)}`;
 
           // Update top services display
@@ -1034,19 +1039,38 @@
             }
           }
 
-          const salesSummaryBody = document.getElementById("salesSummaryBody")
-          // const { data, error } = await supabase.from("newAppointments").select(["serviceType", "price"])
-          const filteredAppointments = appointments.filter(appt => appt.status === "Complete").map(apt => {
-            const newRow = document.createElement("tr")
-            newRow.appendChild(`<td>${apt.serviceType}</td>`)
-            newRow.appendChild(`<td>${apt.price}</td>`)
-            // return `
-            //   <div>hello world</div>
-            // `
-            salesSummaryBody.appendChild(newRow)
-          })
+          const salesNavbar = document.getElementById("salesNavbar")
+
+          salesNavbar.onclick = async function() {
+            const salesSummaryBody = document.getElementById("salesSummaryBody")
+            // const { data } = await supabase.from("newAppointments").select().eq("status", "Complete")
+            // console.log(`lajcknajgajegai`);
+            // console.log(`${data}`);
+            completedCount.forEach(appt => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td data-label="Pet">${appt.serviceType || 'N/A'}</td>
+                <td data-label="Service">${appt.price || 'N/A'}</td>
+                <td data-label="Date & Time"> </td>
+                <td data-label="Status"></td>
+                <td data-label="Price"></td>
+              `;
+
+              salesSummaryBody.appendChild(tr)
+            })
+          }
 
 
+          // const filteredAppointments = appointments.filter(appt => appt.status === "Complete").map(apt => {
+          //   const newRow = document.createElement("tr")
+          //   newRow.appendChild(`<td>${apt.serviceType}</td>`)
+          //   newRow.appendChild(`<td>${apt.price}</td>`)
+          //   // return `
+          //   //   <div>hello world</div>
+          //   // `
+          //   salesSummaryBody.appendChild(newRow)
+          // })
+          // })
 
           // Add CSS for top services if not already added
           if (!document.getElementById('top-services-style')) {
