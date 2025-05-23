@@ -329,6 +329,40 @@
             <!-- dynamic transaction rows -->
           </tbody>
         </table>
+        <table aria-describedby="transactionTableDesc">
+          <caption id="transactionTableDesc">Completed Records</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBodyCompleted">
+            <!-- dynamic transaction rows -->
+          </tbody>
+        </table>
+        <table aria-describedby="transactionTableDesc">
+          <caption id="transactionTableDesc">Cancelled Records</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBodyCancelled">
+            <!-- dynamic transaction rows -->
+          </tbody>
+        </table>
       </div>
 
       <!-- Activity Logs Section -->
@@ -1544,6 +1578,8 @@
       // Transaction Management
       const transactionForm = document.getElementById('transactionForm');
       const transactionTableBody = document.getElementById('transactionTableBody');
+      const transactionTableBodyCompleted = document.getElementById('transactionTableBodyCompleted');
+      const transactionTableBodyCancelled = document.getElementById('transactionTableBodyCancelled');
       const totalRevenueEl = document.getElementById('totalRevenue');
       const todaySalesEl = document.getElementById('todaySales');
       const monthlyRevenueEl = document.getElementById('monthlyRevenue');
@@ -1573,6 +1609,10 @@
             .select('*')
             .order('appointmentDate', { ascending: false });
 
+          const pendingRecords = appointments.filter(appt => appt.status === "Pending")
+          const completedRecords = appointments.filter(appt => appt.status === "Complete")
+          const cancelledRecords = appointments.filter(appt => appt.status === "Cancelled")
+
           // Fetch user_settings for customer info
           const { data: userSettings, error: userSettingsError } = await supabase
             .from('user_settings')
@@ -1598,7 +1638,53 @@
             return;
           }
 
-          transactionTableBody.innerHTML = appointments.map(appt => {
+          transactionTableBody.innerHTML = pendingRecords.map(appt => {
+            return `
+              <tr>
+                <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
+                <td data-label="Customer">
+                  <div class="customer-info">
+                    <div><strong>Name:</strong> ${appt.customer || appt.fullName || appt.name || 'N/A'}</div>
+                    <div><strong>Email:</strong> ${appt.email || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${appt.phone || 'N/A'}</div>
+
+                  </div>
+                </td>
+                <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
+                <td data-label="Service">${appt.serviceType || 'N/A'}</td>
+                <td data-label="Amount">₱${appt.price ? appt.price.toFixed(2) : '0.00'}</td>
+                <td data-label="Status">${appt.status || 'N/A'}</td>
+                <td data-label="Actions">
+                  <button class="edit-transaction-btn" data-id="${appt.id}">Edit</button>
+                  <button class="delete-transaction-btn danger" data-id="${appt.id}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+          transactionTableBodyCompleted.innerHTML = completedRecords.map(appt => {
+            return `
+              <tr>
+                <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
+                <td data-label="Customer">
+                  <div class="customer-info">
+                    <div><strong>Name:</strong> ${appt.customer || appt.fullName || appt.name || 'N/A'}</div>
+                    <div><strong>Email:</strong> ${appt.email || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${appt.phone || 'N/A'}</div>
+
+                  </div>
+                </td>
+                <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
+                <td data-label="Service">${appt.serviceType || 'N/A'}</td>
+                <td data-label="Amount">₱${appt.price ? appt.price.toFixed(2) : '0.00'}</td>
+                <td data-label="Status">${appt.status || 'N/A'}</td>
+                <td data-label="Actions">
+                  <button class="edit-transaction-btn" data-id="${appt.id}">Edit</button>
+                  <button class="delete-transaction-btn danger" data-id="${appt.id}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+          transactionTableBodyCancelled.innerHTML = cancelledRecords.map(appt => {
             return `
               <tr>
                 <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
