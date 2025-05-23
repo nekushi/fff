@@ -134,17 +134,16 @@
       </div>
 
       <!-- Sales Statistics -->
-      <div class="sales-statistics">
+      <!-- <div class="sales-statistics">
         <div class="stat-card stat-card-span-3">
           <h3>Top Services</h3>
           <div id="topServices" class="stat-content">
-            <!-- Will be populated by JavaScript -->
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Sales Table -->
-      <div class="sales-table-container">
+      <!-- <div class="sales-table-container">
         <h2>Sales Records</h2>
         <table class="sales-table" aria-describedby="salesTableDesc">
           <caption id="salesTableDesc">Detailed Sales Records</caption>
@@ -161,14 +160,13 @@
             </tr>
           </thead>
           <tbody id="salesTableBody">
-            <!-- dynamic sales rows -->
           </tbody>
         </table>
-      </div>
+      </div> -->
 
       <!-- Sales Summary Table -->
       <div class="sales-summary-table">
-        <h2>Sales Summary</h2>
+        <h2>Sales Records</h2>
         <table aria-describedby="salesSummaryDesc">
           <caption id="salesSummaryDesc">Sales Summary by Service</caption>
           <thead>
@@ -1036,6 +1034,20 @@
             }
           }
 
+          const salesSummaryBody = document.getElementById("salesSummaryBody")
+          // const { data, error } = await supabase.from("newAppointments").select(["serviceType", "price"])
+          const filteredAppointments = appointments.filter(appt => appt.status === "Complete").map(apt => {
+            const newRow = document.createElement("tr")
+            newRow.appendChild(`<td>${apt.serviceType}</td>`)
+            newRow.appendChild(`<td>${apt.price}</td>`)
+            // return `
+            //   <div>hello world</div>
+            // `
+            salesSummaryBody.appendChild(newRow)
+          })
+
+
+
           // Add CSS for top services if not already added
           if (!document.getElementById('top-services-style')) {
             const style = document.createElement('style');
@@ -1808,7 +1820,7 @@
           } else {
             petTableBody.innerHTML = pets.map(pet => `
               <tr>
-                <td data-label="Customer">${pet.customer || ''}</td>
+                <td data-label="Customer">${`${pet.name}<br />${pet.email}<br />${pet.phone}` || ''}</td>
                 <td data-label="Pet Name">${pet.petName || ''}</td>
                 <td data-label="Species">${pet.petSpecies || ''}</td>
                 <td data-label="Breed">${pet.petBreed || ''}</td>
