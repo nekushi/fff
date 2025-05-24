@@ -27,7 +27,7 @@
       aria-label="Dashboard Overview">Dashboard</div>
     <div class="nav-item" data-section="profile" tabindex="0" role="button" aria-pressed="false"
       aria-label="Profile">Profile</div>
-    <div class="nav-item" data-section="sales" tabindex="0" role="button" aria-pressed="false"
+    <div class="nav-item" data-section="sales" tabindex="0" role="button" aria-pressed="false" id="salesNavbar"
       aria-label="Sales Overview">Sales</div>
     <div class="nav-item" data-section="inventory" tabindex="0" role="button" aria-pressed="false"
       aria-label="Inventory Management">Inventory Management</div>
@@ -60,7 +60,7 @@
 
       </div>
 
-      <div class="recent-activity">
+      <!-- <div class="recent-activity">
         <h2>Recent Activity</h2>
         <table class="activity-table" aria-describedby="activityTableDesc">
           <caption id="activityTableDesc" class="visually-hidden">Recent System Activity</caption>
@@ -72,13 +72,12 @@
             </tr>
           </thead>
           <tbody id="activityTableBody">
-            <!-- Dynamic recent activity rows -->
             <tr>
               <td colspan="3" class="centered-text">No recent activity.</td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> -->
     </section>
 
     <!-- Appointment Management -->
@@ -109,7 +108,7 @@
     <!-- Sales -->
     <section id="sales" class="section" aria-live="polite" hidden>
       <h1 class="section-title">Sales Overview</h1>
-      
+
       <!-- Sales Summary Cards -->
       <div class="sales-summary">
         <div class="summary-card">
@@ -139,7 +138,6 @@
         <div class="stat-card stat-card-span-3">
           <h3>Top Services</h3>
           <div id="topServices" class="stat-content">
-            <!-- Will be populated by JavaScript -->
           </div>
         </div>
       </div>
@@ -162,14 +160,13 @@
             </tr>
           </thead>
           <tbody id="salesTableBody">
-            <!-- dynamic sales rows -->
           </tbody>
         </table>
       </div>
 
       <!-- Sales Summary Table -->
       <div class="sales-summary-table">
-        <h2>Sales Summary</h2>
+        <h2>Sales Records</h2>
         <table aria-describedby="salesSummaryDesc">
           <caption id="salesSummaryDesc">Sales Summary by Service</caption>
           <thead>
@@ -225,7 +222,7 @@
     <!-- Record Management -->
     <section id="records" class="section" aria-live="polite" hidden>
       <h1 class="section-title">Record Management</h1>
-      
+
       <div class="record-nav">
         <button class="record-nav-btn active" data-section="pet-records">Pet & Customer Records</button>
         <button class="record-nav-btn" data-section="user-management">User Management</button>
@@ -329,6 +326,40 @@
             </tr>
           </thead>
           <tbody id="transactionTableBody">
+            <!-- dynamic transaction rows -->
+          </tbody>
+        </table>
+        <table aria-describedby="transactionTableDesc">
+          <caption id="transactionTableDesc">Completed Records</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBodyCompleted">
+            <!-- dynamic transaction rows -->
+          </tbody>
+        </table>
+        <table aria-describedby="transactionTableDesc">
+          <caption id="transactionTableDesc">Cancelled Records</caption>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th class="actions-column">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBodyCancelled">
             <!-- dynamic transaction rows -->
           </tbody>
         </table>
@@ -693,7 +724,7 @@
           const total = sales.reduce((acc, val) => acc + val.amount, 0);
           const now = new Date();
           const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          
+
           // Count appointments for today
           const apptsToday = appointmentsArray.filter(a => {
             const apptDate = new Date(a.appointmentDate);
@@ -718,7 +749,7 @@
 
           // Update Recent Activity
           const recentActivity = [];
-          
+
           // Add recent appointments (last 5)
           appointmentsArray.slice(-5).reverse().forEach(appt => {
             recentActivity.push({
@@ -765,7 +796,7 @@
       async function renderAppointments() {
         try {
           console.log('Starting to fetch appointments...');
-          
+
           // Fetch appointments
           const { data: appointments, error: apptError } = await supabase
             .from('newAppointments')
@@ -813,10 +844,10 @@
           appointmentsArray.forEach((appt) => {
             // Debug log the appointment data
             console.log('Processing appointment:', appt);
-            
+
             // Try to find matching customer in user_settings
-            const customer = userSettings.find(u => 
-              u.fullName && appt.customer && 
+            const customer = userSettings.find(u =>
+              u.fullName && appt.customer &&
               u.fullName.trim().toLowerCase() === appt.customer.trim().toLowerCase()
             );
 
@@ -868,7 +899,7 @@
             // Update appointment status in Supabase
             const { error: updateError } = await supabase
               .from('newAppointments')
-              .update({ 
+              .update({
                 status: 'Completed',
                 notes: notes
               })
@@ -904,11 +935,11 @@
           else if (e.target.classList.contains('cancel-btn')) {
             const id = e.target.getAttribute('data-id');
             const reason = prompt('Enter cancellation reason:');
-            
+
             if (reason !== null) {
               const { error } = await supabase
                 .from('newAppointments')
-                .update({ 
+                .update({
                   status: 'Canceled',
                   notes: reason
                 })
@@ -946,7 +977,7 @@
       async function updateSalesSummary() {
         try {
           console.log('Starting to fetch appointments for sales summary...');
-          
+
           // Fetch all appointments
           const { data: appointments, error: apptError } = await supabase
             .from('newAppointments')
@@ -961,7 +992,7 @@
 
           // Ensure appointments is an array
           const appointmentsArray = Array.isArray(appointments) ? appointments : [];
-          
+
           if (appointmentsArray.length === 0) {
             console.log('No appointments found');
             totalSalesEl.textContent = '₱0.00';
@@ -978,17 +1009,22 @@
             const price = parseFloat(appt.price) || 0;
             return acc + price;
           }, 0);
-          
+
           // Count completed appointments
-          const completedCount = appointmentsArray.filter(a => a.status === 'Completed').length;
-          
+          const completedCountLength = appointmentsArray.filter(a => a.status === 'Complete').length;
+          const completedCount = appointmentsArray.filter(a => a.status === 'Complete');
+
+          console.log(completedCount);
+          console.log(completedCountLength);
+
+
           // Calculate revenue for this month
           const now = new Date();
           const revenueThisMonth = appointmentsArray
             .filter(a => {
               if (!a.appointmentDate) return false;
               const apptDate = new Date(a.appointmentDate);
-              return apptDate.getFullYear() === now.getFullYear() && 
+              return apptDate.getFullYear() === now.getFullYear() &&
                      apptDate.getMonth() === now.getMonth() &&
                      a.status === 'Completed';
             })
@@ -1010,13 +1046,13 @@
           // Sort services by count and get top 5
           const topServices = Object.entries(serviceCounts)
             .sort(([,a], [,b]) => b - a)
-            .slice(0, 5);
+            .slice(0, 3);
 
           console.log('Top services:', topServices);
 
           // Update UI elements
           if (totalSalesEl) totalSalesEl.textContent = `₱${total.toFixed(2)}`;
-          if (apptsCompletedEl) apptsCompletedEl.textContent = completedCount;
+          if (apptsCompletedEl) apptsCompletedEl.textContent = completedCountLength;
           if (revenueMonthEl) revenueMonthEl.textContent = `₱${revenueThisMonth.toFixed(2)}`;
 
           // Update top services display
@@ -1036,6 +1072,39 @@
               `;
             }
           }
+
+          const salesNavbar = document.getElementById("salesNavbar")
+
+          salesNavbar.onclick = async function() {
+            const salesSummaryBody = document.getElementById("salesSummaryBody")
+            // const { data } = await supabase.from("newAppointments").select().eq("status", "Complete")
+            // console.log(`lajcknajgajegai`);
+            // console.log(`${data}`);
+            completedCount.forEach(appt => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td data-label="Pet">${appt.serviceType || 'N/A'}</td>
+                <td data-label="Service">₱${appt.price || 'N/A'}</td>
+                <td data-label="Date & Time"> </td>
+                <td data-label="Status"></td>
+                <td data-label="Price"></td>
+              `;
+
+              salesSummaryBody.appendChild(tr)
+            })
+          }
+
+
+          // const filteredAppointments = appointments.filter(appt => appt.status === "Complete").map(apt => {
+          //   const newRow = document.createElement("tr")
+          //   newRow.appendChild(`<td>${apt.serviceType}</td>`)
+          //   newRow.appendChild(`<td>${apt.price}</td>`)
+          //   // return `
+          //   //   <div>hello world</div>
+          //   // `
+          //   salesSummaryBody.appendChild(newRow)
+          // })
+          // })
 
           // Add CSS for top services if not already added
           if (!document.getElementById('top-services-style')) {
@@ -1073,7 +1142,7 @@
           if (apptsCompletedEl) apptsCompletedEl.textContent = 'Error';
           if (revenueMonthEl) revenueMonthEl.textContent = 'Error';
           if (topServicesEl) topServicesEl.innerHTML = '<p>Error loading services data</p>';
-          
+
           // Show error alert with more details
           alert(`Error updating sales summary: ${error.message}`);
         }
@@ -1242,7 +1311,7 @@
       recordNavBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           const sectionId = btn.getAttribute('data-section');
-          
+
           // Hide all sections first
           recordSections.forEach(section => {
             section.style.display = 'none';
@@ -1263,7 +1332,7 @@
 
             // Load appropriate content based on section
             switch(sectionId) {
-              case 'pet-records': 
+              case 'pet-records':
                 renderPetAndCustomerRecords();
                 break;
               case 'user-management':
@@ -1301,7 +1370,7 @@
           pets.forEach((pet, idx) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-              <td data-label="Customer">${pet.customer || ''}</td>
+              <td data-label="Customer">${`${pet.name}<br />${pet.email}<br />${pet.phone}` || ''}</td>
               <td data-label="Pet Name">${pet.petName || ''}</td>
               <td data-label="Species">${pet.petSpecies || ''}</td>
               <td data-label="Breed">${pet.petBreed || ''}</td>
@@ -1478,7 +1547,7 @@
           try {
             const id = e.target.getAttribute('data-id');
             const name = e.target.closest('tr').querySelector('td[data-label="Name"]').textContent;
-            
+
             if (confirm(`Are you sure you want to delete user "${name}"?`)) {
               const { error } = await supabase
                 .from('users')
@@ -1509,6 +1578,8 @@
       // Transaction Management
       const transactionForm = document.getElementById('transactionForm');
       const transactionTableBody = document.getElementById('transactionTableBody');
+      const transactionTableBodyCompleted = document.getElementById('transactionTableBodyCompleted');
+      const transactionTableBodyCancelled = document.getElementById('transactionTableBodyCancelled');
       const totalRevenueEl = document.getElementById('totalRevenue');
       const todaySalesEl = document.getElementById('todaySales');
       const monthlyRevenueEl = document.getElementById('monthlyRevenue');
@@ -1538,6 +1609,10 @@
             .select('*')
             .order('appointmentDate', { ascending: false });
 
+          const pendingRecords = appointments.filter(appt => appt.status === "Pending")
+          const completedRecords = appointments.filter(appt => appt.status === "Complete")
+          const cancelledRecords = appointments.filter(appt => appt.status === "Cancelled")
+
           // Fetch user_settings for customer info
           const { data: userSettings, error: userSettingsError } = await supabase
             .from('user_settings')
@@ -1563,7 +1638,7 @@
             return;
           }
 
-          transactionTableBody.innerHTML = appointments.map(appt => {
+          transactionTableBody.innerHTML = pendingRecords.map(appt => {
             return `
               <tr>
                 <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
@@ -1572,7 +1647,53 @@
                     <div><strong>Name:</strong> ${appt.customer || appt.fullName || appt.name || 'N/A'}</div>
                     <div><strong>Email:</strong> ${appt.email || 'N/A'}</div>
                     <div><strong>Phone:</strong> ${appt.phone || 'N/A'}</div>
-                   
+
+                  </div>
+                </td>
+                <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
+                <td data-label="Service">${appt.serviceType || 'N/A'}</td>
+                <td data-label="Amount">₱${appt.price ? appt.price.toFixed(2) : '0.00'}</td>
+                <td data-label="Status">${appt.status || 'N/A'}</td>
+                <td data-label="Actions">
+                  <button class="edit-transaction-btn" data-id="${appt.id}">Edit</button>
+                  <button class="delete-transaction-btn danger" data-id="${appt.id}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+          transactionTableBodyCompleted.innerHTML = completedRecords.map(appt => {
+            return `
+              <tr>
+                <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
+                <td data-label="Customer">
+                  <div class="customer-info">
+                    <div><strong>Name:</strong> ${appt.customer || appt.fullName || appt.name || 'N/A'}</div>
+                    <div><strong>Email:</strong> ${appt.email || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${appt.phone || 'N/A'}</div>
+
+                  </div>
+                </td>
+                <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
+                <td data-label="Service">${appt.serviceType || 'N/A'}</td>
+                <td data-label="Amount">₱${appt.price ? appt.price.toFixed(2) : '0.00'}</td>
+                <td data-label="Status">${appt.status || 'N/A'}</td>
+                <td data-label="Actions">
+                  <button class="edit-transaction-btn" data-id="${appt.id}">Edit</button>
+                  <button class="delete-transaction-btn danger" data-id="${appt.id}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+          transactionTableBodyCancelled.innerHTML = cancelledRecords.map(appt => {
+            return `
+              <tr>
+                <td data-label="Date">${appt.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString() : 'N/A'}</td>
+                <td data-label="Customer">
+                  <div class="customer-info">
+                    <div><strong>Name:</strong> ${appt.customer || appt.fullName || appt.name || 'N/A'}</div>
+                    <div><strong>Email:</strong> ${appt.email || 'N/A'}</div>
+                    <div><strong>Phone:</strong> ${appt.phone || 'N/A'}</div>
+
                   </div>
                 </td>
                 <td data-label="Pet">${appt.pet || appt.petName || 'N/A'}</td>
@@ -1651,7 +1772,7 @@
           };
           activityLogs.unshift(log); // Add to beginning of array
           saveData();
-          
+
           // Only try to render if the element exists
           if (activityLogTableBody) {
             renderActivityLogs();
@@ -1663,7 +1784,7 @@
 
       function renderActivityLogs(filterType = 'all', filterDate = '') {
         if (!activityLogTableBody) return; // Exit if element doesn't exist
-        
+
         activityLogTableBody.innerHTML = '';
         let filteredLogs = activityLogs;
 
@@ -1672,7 +1793,7 @@
         }
 
         if (filterDate) {
-          filteredLogs = filteredLogs.filter(log => 
+          filteredLogs = filteredLogs.filter(log =>
             log.timestamp.startsWith(filterDate)
           );
         }
@@ -1809,7 +1930,7 @@
           } else {
             petTableBody.innerHTML = pets.map(pet => `
               <tr>
-                <td data-label="Customer">${pet.customer || ''}</td>
+                <td data-label="Customer">${`${pet.name}<br />${pet.email}<br />${pet.phone}` || ''}</td>
                 <td data-label="Pet Name">${pet.petName || ''}</td>
                 <td data-label="Species">${pet.petSpecies || ''}</td>
                 <td data-label="Breed">${pet.petBreed || ''}</td>
@@ -1864,7 +1985,7 @@
               <tr>
                 <td>${member.full_name || ''}</td>
                 <td>${member.role || ''}</td>
-                <td>${member.staff_schedules?.map(schedule => 
+                <td>${member.staff_schedules?.map(schedule =>
                   `${schedule.day}: ${schedule.start_time}-${schedule.end_time}`
                 ).join('<br>') || ''}</td>
                 <td>
@@ -1908,7 +2029,7 @@
               </tr>
             `).join('');
           }
-          
+
         } catch (error) {
           console.error('Error rendering user management:', error);
           alert('Error loading user records. Please try again.');
