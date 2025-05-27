@@ -1941,6 +1941,72 @@
                 </td>
               </tr>
             `).join('');
+
+            // Add event listeners for pet record actions
+            petTableBody.querySelectorAll('.edit-pet-btn').forEach(btn => {
+              btn.addEventListener('click', async (e) => {
+                const petId = e.target.getAttribute('data-id');
+                const pet = pets.find(p => p.id === petId);
+                if (!pet) return;
+
+                const newPetName = prompt('Enter new pet name:', pet.petName);
+                if (newPetName === null) return;
+
+                const newSpecies = prompt('Enter new species:', pet.petSpecies);
+                if (newSpecies === null) return;
+
+                const newBreed = prompt('Enter new breed:', pet.petBreed);
+                if (newBreed === null) return;
+
+                const newNotes = prompt('Enter new notes:', pet.notes);
+                if (newNotes === null) return;
+
+                try {
+                  const { error } = await supabase
+                    .from('profile-pets')
+                    .update({
+                      petName: newPetName,
+                      petSpecies: newSpecies,
+                      petBreed: newBreed,
+                      notes: newNotes
+                    })
+                    .eq('id', petId);
+
+                  if (error) throw error;
+
+                  alert('Pet record updated successfully!');
+                  renderPetAndCustomerRecords();
+                } catch (error) {
+                  console.error('Error updating pet record:', error);
+                  alert('Error updating pet record. Please try again.');
+                }
+              });
+            });
+
+            petTableBody.querySelectorAll('.delete-pet-btn').forEach(btn => {
+              btn.addEventListener('click', async (e) => {
+                const petId = e.target.getAttribute('data-id');
+                const pet = pets.find(p => p.id === petId);
+                if (!pet) return;
+
+                if (confirm(`Are you sure you want to delete ${pet.petName}'s record?`)) {
+                  try {
+                    const { error } = await supabase
+                      .from('profile-pets')
+                      .delete()
+                      .eq('id', petId);
+
+                    if (error) throw error;
+
+                    alert('Pet record deleted successfully!');
+                    renderPetAndCustomerRecords();
+                  } catch (error) {
+                    console.error('Error deleting pet record:', error);
+                    alert('Error deleting pet record. Please try again.');
+                  }
+                }
+              });
+            });
           }
 
           // Update customer records table
@@ -1961,6 +2027,68 @@
                 </td>
               </tr>
             `).join('');
+
+            // Add event listeners for customer record actions
+            customerTableBody.querySelectorAll('.edit-customer-btn').forEach(btn => {
+              btn.addEventListener('click', async (e) => {
+                const customerId = e.target.getAttribute('data-id');
+                const customer = customers.find(c => c.id === customerId);
+                if (!customer) return;
+
+                const newName = prompt('Enter new name:', customer.fullName);
+                if (newName === null) return;
+
+                const newPhone = prompt('Enter new phone:', customer.phone);
+                if (newPhone === null) return;
+
+                const newAddress = prompt('Enter new address:', customer.address);
+                if (newAddress === null) return;
+
+                try {
+                  const { error } = await supabase
+                    .from('user_settings')
+                    .update({
+                      fullName: newName,
+                      phone: newPhone,
+                      address: newAddress
+                    })
+                    .eq('id', customerId);
+
+                  if (error) throw error;
+
+                  alert('Customer record updated successfully!');
+                  renderPetAndCustomerRecords();
+                } catch (error) {
+                  console.error('Error updating customer record:', error);
+                  alert('Error updating customer record. Please try again.');
+                }
+              });
+            });
+
+            customerTableBody.querySelectorAll('.delete-customer-btn').forEach(btn => {
+              btn.addEventListener('click', async (e) => {
+                const customerId = e.target.getAttribute('data-id');
+                const customer = customers.find(c => c.id === customerId);
+                if (!customer) return;
+
+                if (confirm(`Are you sure you want to delete ${customer.fullName}'s record?`)) {
+                  try {
+                    const { error } = await supabase
+                      .from('user_settings')
+                      .delete()
+                      .eq('id', customerId);
+
+                    if (error) throw error;
+
+                    alert('Customer record deleted successfully!');
+                    renderPetAndCustomerRecords();
+                  } catch (error) {
+                    console.error('Error deleting customer record:', error);
+                    alert('Error deleting customer record. Please try again.');
+                  }
+                }
+              });
+            });
           }
         } catch (error) {
           console.error('Error rendering pet and customer records:', error);
