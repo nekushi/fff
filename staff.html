@@ -278,15 +278,59 @@
       .center-text {
         text-align: center;
       }
+
+      /* Inventory Section Styles */
+      .inventory-section {
+        padding: var(--spacing-large);
+      }
+
+      .inventory-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        padding: var(--spacing-medium);
+      }
+
+      .inventory-section table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: var(--spacing-medium);
+      }
+
+      .inventory-section th,
+      .inventory-section td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      .inventory-section th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+      }
+
+      .inventory-section tbody tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      .inventory-section .status-low {
+        color: #dc3545;
+        font-weight: bold;
+      }
+
+      .inventory-section .status-ok {
+        color: #28a745;
+      }
     </style>
   </head>
   <body>
     <aside class="sidebar">
-      <img src="logo.png" alt="Pet Grooming Salon Logo" class="logo" />
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiM0Q0FGNTAiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5QZXQgU2Fsb248L3RleHQ+PC9zdmc+" alt="Pet Grooming Salon Logo" class="logo" />
       <nav>
         <ul>
           <li class="nav-item active" data-section="profile">Profile</li>
           <li class="nav-item" data-section="appointments">Appointments</li>
+          <li class="nav-item" data-section="inventory">Inventory</li>
         </ul>
       </nav>
       <div class="nav-item logout-item" id="logoutBtn">Log Out</div>
@@ -321,6 +365,29 @@
               <p id="profileRole">Loading...</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- Inventory Section -->
+      <section id="inventory" class="section inventory-section">
+        <h1 class="section-title">Inventory Overview</h1>
+        
+        <div class="inventory-container">
+          <table aria-describedby="inventoryTableDesc">
+            <caption id="inventoryTableDesc">Current Stock Levels</caption>
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Current Stock</th>
+                <th>Stock Status</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <tr>
+                <td colspan="3" class="center-text">Loading inventory...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -584,6 +651,8 @@
         await loadProfile();
         // Load transactions
         loadTransactions();
+        // Load inventory
+        loadInventory();
       }
 
       // Function to load profile data
@@ -803,6 +872,47 @@
           if (transactionTableBody) {
             transactionTableBody.innerHTML =
               '<tr><td colspan="6" style="text-align: center;">Error loading transactions. Please try again.</td></tr>';
+          }
+        }
+      }
+
+      // Function to load inventory data
+      async function loadInventory() {
+        try {
+          const { data: inventory, error } = await supabase
+            .from('inventory')
+            .select('*')
+            .order('item_name', { ascending: true });
+
+          if (error) {
+            throw error;
+          }
+
+          const inventoryTableBody = document.getElementById('inventoryTableBody');
+          
+          if (!inventory || inventory.length === 0) {
+            inventoryTableBody.innerHTML = '<tr><td colspan="3" class="center-text">No inventory items found.</td></tr>';
+            return;
+          }
+
+          inventoryTableBody.innerHTML = inventory.map(item => {
+            const status = item.quantity <= 5 ? 'Low Stock' : 'In Stock';
+            const statusClass = item.quantity <= 5 ? 'status-low' : 'status-ok';
+            
+            return `
+              <tr>
+                <td>${item.item_name || 'N/A'}</td>
+                <td>${item.quantity || 0}</td>
+                <td class="${statusClass}">${status}</td>
+              </tr>
+            `;
+          }).join('');
+
+        } catch (error) {
+          console.error('Error loading inventory:', error);
+          const inventoryTableBody = document.getElementById('inventoryTableBody');
+          if (inventoryTableBody) {
+            inventoryTableBody.innerHTML = '<tr><td colspan="3" class="center-text">Error loading inventory. Please try again.</td></tr>';
           }
         }
       }
