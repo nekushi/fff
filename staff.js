@@ -1,9 +1,3 @@
-// Initialize Supabase client
-const supabase = window.supabase.createClient(
-    'https://zehjuqavoktgxjqwcqpo.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaGp1cWF2b2t0Z3hqcXdjcXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDA2ODAsImV4cCI6MjA2MTc3NjY4MH0.n2Nb0QgaZFVW4zC0NyQGAy38tka_gwkhiTrBC8rU-GM'
-);
-
 // Function to show/hide sections
 function showSection(sectionId) {
     console.log('Showing section:', sectionId); // Debug log
@@ -55,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 showSection(sectionId);
                 if (sectionId === 'appointments') {
                     loadAppointments();
+                } else if (sectionId === 'inventory') {
+                    loadInventory();
                 }
             }
         });
@@ -73,12 +69,10 @@ async function loadAppointments() {
             throw new Error('User email not found');
         }
 
-        console.log('[DEBUG] Using staff_email for filtering:', email);
-        // Fetch from newAppointments and filter by staff_email
+        // Fetch from newAppointments without staff_email filter
         const { data: appointments, error } = await supabase
             .from('newAppointments')
             .select('*')
-            .eq('staff_email', email)
             .order('appointmentDate', { ascending: true });
 
         if (error) throw error;
@@ -88,7 +82,7 @@ async function loadAppointments() {
         const transactionTableBody = document.getElementById('transactionTableBody');
 
         if (!appointments || appointments.length === 0) {
-            console.warn('[DEBUG] No appointments found for this staff.');
+            console.warn('[DEBUG] No appointments found.');
             transactionTableBody.innerHTML = '<tr><td colspan="6" class="center-text">No appointments found</td></tr>';
             return;
         }
@@ -175,4 +169,62 @@ function formatDateTime(dateString) {
         console.error('Error formatting date:', error);
         return dateString;
     }
+}
+
+// Function to load inventory data
+async function loadInventory() {
+    try {
+        const { data: inventory, error } = await supabase
+            .from('inventory')
+            .select('*')
+            .order('name', { ascending: true });
+
+        if (error) {
+            console.warn('Error fetching from Supabase, using localStorage fallback:', error);
+            // Use localStorage as fallback
+            const localInventory = JSON.parse(localStorage.getItem('inventory')) || [
+                { name: 'Shampoo', qty: 3 },
+                { name: 'Conditioner', qty: 8 },
+                { name: 'Toys', qty: 15 },
+                { name: 'Treats', qty: 5 }
+            ];
+            renderInventoryTable(localInventory);
+            return;
+        }
+
+        renderInventoryTable(inventory);
+    } catch (error) {
+        console.error('Error loading inventory:', error);
+        // Use localStorage as fallback on any error
+        const localInventory = JSON.parse(localStorage.getItem('inventory')) || [
+            { name: 'Shampoo', qty: 3 },
+            { name: 'Conditioner', qty: 8 },
+            { name: 'Toys', qty: 15 },
+            { name: 'Treats', qty: 5 }
+        ];
+        renderInventoryTable(localInventory);
+    }
+}
+
+// Helper function to render the inventory table
+function renderInventoryTable(inventory) {
+    const inventoryTableBody = document.getElementById('inventoryTableBody');
+    
+    if (!inventory || inventory.length === 0) {
+        inventoryTableBody.innerHTML = '<tr><td colspan="3" class="center-text">No inventory items found.</td></tr>';
+        return;
+    }
+
+    inventoryTableBody.innerHTML = inventory.map(item => {
+        const status = item.qty <= 5 ? 'Low Stock' : 'In Stock';
+        const statusClass = item.qty <= 5 ? 'status-low' : 'status-ok';
+        
+        return `
+            <tr>
+                <td>${item.name || 'N/A'}</td>
+                <td>${item.qty || 0}</td>
+                <td class="${statusClass}">${status}</td>
+            </tr>
+        `;
+    }).join('');
 } 
