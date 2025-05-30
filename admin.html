@@ -1246,16 +1246,13 @@
           const salesSummaryBody = document.getElementById("salesSummaryBody")
 
           salesNavbar.onclick = async function() {
-            // const { data } = await supabase.from("newAppointments").select().eq("status", "Complete")
-            // console.log(`lajcknajgajegai`);
-            // console.log(`${data}`);
             salesSummaryBody.innerHTML = ""
             completedCount.forEach(appt => {
               const tr = document.createElement('tr');
               tr.innerHTML = `
                 <td data-label="Pet">${appt.serviceType || 'N/A'}</td>
                 <td data-label="Service">₱${appt.price || 'N/A'}</td>
-                <td data-label="Date & Time">${appt.appointmentDate}</td>
+                <td data-label="Date & Time">${appt.appointmentDate}, ${appt.appointmentTime}</td>
               `;
 
               salesSummaryBody.appendChild(tr)
