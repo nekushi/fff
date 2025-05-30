@@ -5,14 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pooch Purrfect Admin Dashboard</title>
-  <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
   <link rel="stylesheet" href="admin.css" />
   <!-- Add Supabase client library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -24,9 +16,6 @@
     }
     .customer-info div {
       margin-bottom: 2px;
-    }
-    .mySales {
-      width: 100%;
     }
   </style>
 </head>
@@ -68,55 +57,7 @@
           <h3>Low Stock Items</h3>
           <p id="dashboardLowStock">0</p>
         </div>
-      </div>
 
-      <div class="row mb-4">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title mb-0">Quick Actions</h5>
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-3 mb-3">
-                  <button
-                    type="button"
-                    class="btn btn-primary w-100"
-                    id="bookAppointmentBtn"
-                  >
-                    <i class="fas fa-calendar-plus"></i> Book an
-                    Appointment
-                  </button>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <button
-                    class="btn btn-success w-100"
-                    data-bs-toggle="modal"
-                    data-bs-target="#addPetModal"
-                  >
-                    <i class="fas fa-paw"></i> Add New Pet
-                  </button>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <button
-                    class="btn btn-info w-100"
-                    id="viewAppointmentsBtn"
-                  >
-                    <i class="fas fa-list"></i> View All Appointments
-                  </button>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <button
-                    class="btn btn-secondary w-100"
-                    id="updateProfileBtn"
-                  >
-                    <i class="fas fa-user"></i> Update Profile
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- <div class="recent-activity">
@@ -226,12 +167,15 @@
       <!-- Sales Summary Table -->
       <div class="sales-summary-table">
         <h2>Sales Records</h2>
-        <table aria-describedby="salesSummaryDesc" class="mySales">
-          <thead class="">
+        <table aria-describedby="salesSummaryDesc">
+          <caption id="salesSummaryDesc">Sales Summary by Service</caption>
+          <thead>
             <tr>
               <th>Service</th>
               <th>Total Sales</th>
-              <th>Date</th>
+              <th>Number of Transactions</th>
+              <th>Average Amount</th>
+              <th>% of Total</th>
             </tr>
           </thead>
           <tbody id="salesSummaryBody">
@@ -1243,19 +1187,20 @@
           }
 
           const salesNavbar = document.getElementById("salesNavbar")
-          const salesSummaryBody = document.getElementById("salesSummaryBody")
 
           salesNavbar.onclick = async function() {
+            const salesSummaryBody = document.getElementById("salesSummaryBody")
             // const { data } = await supabase.from("newAppointments").select().eq("status", "Complete")
             // console.log(`lajcknajgajegai`);
             // console.log(`${data}`);
-            salesSummaryBody.innerHTML = ""
             completedCount.forEach(appt => {
               const tr = document.createElement('tr');
               tr.innerHTML = `
                 <td data-label="Pet">${appt.serviceType || 'N/A'}</td>
                 <td data-label="Service">₱${appt.price || 'N/A'}</td>
-                <td data-label="Date & Time">${appt.appointmentDate}</td>
+                <td data-label="Date & Time"> </td>
+                <td data-label="Status"></td>
+                <td data-label="Price"></td>
               `;
 
               salesSummaryBody.appendChild(tr)
