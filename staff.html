@@ -640,20 +640,7 @@
         }
       }
 
-<<<<<<< HEAD
       // Function to render Transactions
-=======
-      async function markAsDone(id) {
-        const { data, error } = await supabase
-          .from("newAppointments")
-          .update({ status: "Complete" })
-          .eq("id", id);
-
-        window.location.reload();
-      }
-
-      // Function to render Transactions.
->>>>>>> 74def1a88ee16ce096227c6cf381d4abc701074d
       async function loadTransactions() {
         try {
           // Fetch appointments from newAppointments
