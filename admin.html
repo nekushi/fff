@@ -5,6 +5,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pooch Purrfect Admin Dashboard</title>
+  <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   <link rel="stylesheet" href="admin.css" />
   <!-- Add Supabase client library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,6 +24,9 @@
     }
     .customer-info div {
       margin-bottom: 2px;
+    }
+    .mySales {
+      width: 100%;
     }
   </style>
 </head>
@@ -57,7 +68,55 @@
           <h3>Low Stock Items</h3>
           <p id="dashboardLowStock">0</p>
         </div>
+      </div>
 
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <button
+                    type="button"
+                    class="btn btn-primary w-100"
+                    id="bookAppointmentBtn"
+                  >
+                    <i class="fas fa-calendar-plus"></i> Book an
+                    Appointment
+                  </button>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <button
+                    class="btn btn-success w-100"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addPetModal"
+                  >
+                    <i class="fas fa-paw"></i> Add New Pet
+                  </button>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <button
+                    class="btn btn-info w-100"
+                    id="viewAppointmentsBtn"
+                  >
+                    <i class="fas fa-list"></i> View All Appointments
+                  </button>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <button
+                    class="btn btn-secondary w-100"
+                    id="updateProfileBtn"
+                  >
+                    <i class="fas fa-user"></i> Update Profile
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- <div class="recent-activity">
@@ -167,15 +226,12 @@
       <!-- Sales Summary Table -->
       <div class="sales-summary-table">
         <h2>Sales Records</h2>
-        <table aria-describedby="salesSummaryDesc">
-          <caption id="salesSummaryDesc">Sales Summary by Service</caption>
-          <thead>
+        <table aria-describedby="salesSummaryDesc" class="mySales">
+          <thead class="">
             <tr>
               <th>Service</th>
               <th>Total Sales</th>
-              <th>Number of Transactions</th>
-              <th>Average Amount</th>
-              <th>% of Total</th>
+              <th>Date</th>
             </tr>
           </thead>
           <tbody id="salesSummaryBody">
@@ -417,6 +473,119 @@
     const supabaseUrl = 'https://zehjuqavoktgxjqwcqpo.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaGp1cWF2b2t0Z3hqcXdjcXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyMDA2ODAsImV4cCI6MjA2MTc3NjY4MH0.n2Nb0QgaZFVW4zC0NyQGAy38tka_gwkhiTrBC8rU-GM';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Global functions for pet and customer management
+    async function editPet(id) {
+      const { data: pet } = await supabase
+        .from('profile-pets')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (!pet) return;
+
+      const newName = window.prompt('Pet Name:', pet.petName);
+      if (!newName) return;
+
+      const newSpecies = window.prompt('Species:', pet.petSpecies);
+      if (!newSpecies) return;
+
+      const newBreed = window.prompt('Breed:', pet.petBreed);
+      if (!newBreed) return;
+
+      const newNotes = window.prompt('Notes:', pet.notes);
+      if (!newNotes) return;
+
+      try {
+        await supabase
+          .from('profile-pets')
+          .update({
+            petName: newName,
+            petSpecies: newSpecies,
+            petBreed: newBreed,
+            notes: newNotes
+          })
+          .eq('id', id);
+
+        alert('Pet updated!');
+        renderPetAndCustomerRecords();
+      } catch (error) {
+        alert('Error updating pet');
+      }
+    }
+
+    async function deletePet(id) {
+      if (window.confirm('Delete this pet?')) {
+        try {
+          await supabase
+            .from('profile-pets')
+            .delete()
+            .eq('id', id);
+
+          alert('Pet deleted!');
+          renderPetAndCustomerRecords();
+        } catch (error) {
+          alert('Error deleting pet');
+        }
+      }
+    }
+
+    async function editCustomer(id) {
+      const { data: customer } = await supabase
+        .from('user_settings')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (!customer) return;
+
+      const newName = window.prompt('Name:', customer.fullName);
+      if (!newName) return;
+
+      const newPhone = window.prompt('Phone:', customer.phone);
+      if (!newPhone) return;
+
+      const newAddress = window.prompt('Address:', customer.address);
+      if (!newAddress) return;
+
+      try {
+        await supabase
+          .from('user_settings')
+          .update({
+            fullName: newName,
+            phone: newPhone,
+            address: newAddress
+          })
+          .eq('id', id);
+
+        alert('Customer updated!');
+        renderPetAndCustomerRecords();
+      } catch (error) {
+        alert('Error updating customer');
+      }
+    }
+
+    async function deleteCustomer(id) {
+      if (window.confirm('Delete this customer?')) {
+        try {
+          await supabase
+            .from('user_settings')
+            .delete()
+            .eq('id', id);
+
+          alert('Customer deleted!');
+          renderPetAndCustomerRecords();
+        } catch (error) {
+          alert('Error deleting customer');
+        }
+      }
+    }
+
+    // Make functions globally available
+    window.editPet = editPet;
+    window.deletePet = deletePet;
+    window.editCustomer = editCustomer;
+    window.deleteCustomer = deleteCustomer;
 
     // Check authentication on page load
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1074,20 +1243,16 @@
           }
 
           const salesNavbar = document.getElementById("salesNavbar")
+          const salesSummaryBody = document.getElementById("salesSummaryBody")
 
           salesNavbar.onclick = async function() {
-            const salesSummaryBody = document.getElementById("salesSummaryBody")
-            // const { data } = await supabase.from("newAppointments").select().eq("status", "Complete")
-            // console.log(`lajcknajgajegai`);
-            // console.log(`${data}`);
+            salesSummaryBody.innerHTML = ""
             completedCount.forEach(appt => {
               const tr = document.createElement('tr');
               tr.innerHTML = `
                 <td data-label="Pet">${appt.serviceType || 'N/A'}</td>
                 <td data-label="Service">₱${appt.price || 'N/A'}</td>
-                <td data-label="Date & Time"> </td>
-                <td data-label="Status"></td>
-                <td data-label="Price"></td>
+                <td data-label="Date & Time">${appt.appointmentDate}, ${appt.appointmentTime}</td>
               `;
 
               salesSummaryBody.appendChild(tr)
@@ -1910,12 +2075,10 @@
       // Function to render Pet and Customer Records
       async function renderPetAndCustomerRecords() {
         try {
-          // Fetch and display pet records
           const { data: pets, error: petsError } = await supabase
             .from('profile-pets')
             .select('*');
 
-          // Fetch and display customer records
           const { data: customers, error: customersError } = await supabase
             .from('user_settings')
             .select('*');
@@ -1923,7 +2086,7 @@
           if (petsError) throw petsError;
           if (customersError) throw customersError;
 
-          // Update pet records table
+          // Pet Records Table
           const petTableBody = document.getElementById('recordTableBody');
           if (!pets || pets.length === 0) {
             petTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No pet records found.</td></tr>';
@@ -1936,14 +2099,14 @@
                 <td data-label="Breed">${pet.petBreed || ''}</td>
                 <td data-label="Notes">${pet.notes || ''}</td>
                 <td data-label="Actions">
-                  <button class="edit-pet-btn" data-id="${pet.id}">Edit</button>
-                  <button class="delete-pet-btn danger" data-id="${pet.id}">Delete</button>
+                  <button type="button" onclick="window.editPet('${pet.id}')">Edit</button>
+                  <button type="button" onclick="window.deletePet('${pet.id}')" class="danger">Delete</button>
                 </td>
               </tr>
             `).join('');
           }
 
-          // Update customer records table
+          // Customer Records Table
           const customerTableBody = document.getElementById('customerRecordTableBody');
           if (!customers || customers.length === 0) {
             customerTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No customer records found.</td></tr>';
@@ -1956,112 +2119,14 @@
                 <td data-label="Address">${customer.address || ''}</td>
                 <td data-label="Password">${customer.password || ''}</td>
                 <td data-label="Actions">
-                  <button class="edit-customer-btn" data-id="${customer.id}">Edit</button>
-                  <button class="delete-customer-btn danger" data-id="${customer.id}">Delete</button>
+                  <button type="button" onclick="window.editCustomer('${customer.id}')">Edit</button>
+                  <button type="button" onclick="window.deleteCustomer('${customer.id}')" class="danger">Delete</button>
                 </td>
               </tr>
             `).join('');
           }
         } catch (error) {
-          console.error('Error rendering pet and customer records:', error);
           alert('Error loading records. Please try again.');
-        }
-      }
-
-      // Function to render Staff and Scheduling
-      async function renderStaffAndScheduling() {
-        try {
-          const { data: staff, error } = await supabase
-            .from('staff')
-            .select('*, staff_schedules(*)');
-
-          if (error) throw error;
-
-          const staffTableBody = document.getElementById('staffTableBody');
-          if (!staff || staff.length === 0) {
-            staffTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No staff records found.</td></tr>';
-          } else {
-            staffTableBody.innerHTML = staff.map(member => `
-              <tr>
-                <td>${member.full_name || ''}</td>
-                <td>${member.role || ''}</td>
-                <td>${member.staff_schedules?.map(schedule =>
-                  `${schedule.day}: ${schedule.start_time}-${schedule.end_time}`
-                ).join('<br>') || ''}</td>
-                <td>
-                  <button class="edit-staff-btn" data-id="${member.id}">Edit</button>
-                  <button class="delete-staff-btn danger" data-id="${member.id}">Delete</button>
-                </td>
-              </tr>
-            `).join('');
-          }
-        } catch (error) {
-          console.error('Error rendering staff and scheduling:', error);
-          alert('Error loading staff records. Please try again.');
-        }
-      }
-
-      // Function to render User Management
-      async function renderUserManagement() {
-        try {
-          const { data: users, error } = await supabase
-            .from('users')
-            .select('*');
-
-          if (error) throw error;
-
-          const userTableBody = document.getElementById('userTableBody');
-          if (!users || users.length === 0) {
-            userTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No users found.</td></tr>';
-          } else {
-            userTableBody.innerHTML = users.map(user => `
-              <tr>
-                <td>${user.full_name || ''}</td>
-                <td>${user.email || ''}</td>
-                <td>${user.phone_number || ''}</td>
-                <td>${user.address || ''}</td>
-                <td>${'*'.repeat(8)}</td>
-                <td>${user.role || ''}</td>
-                <td>
-                  <button class="edit-user-btn" data-id="${user.id}">Edit</button>
-                  <button class="delete-user-btn danger" data-id="${user.id}">Delete</button>
-                </td>
-              </tr>
-            `).join('');
-          }
-
-        } catch (error) {
-          console.error('Error rendering user management:', error);
-          alert('Error loading user records. Please try again.');
-        }
-      }
-
-      // Function to render Activity Logs
-      async function renderActivityLogs() {
-        try {
-          const { data: logs, error } = await supabase
-            .from('activity_logs')
-            .select('*');
-
-          if (error) throw error;
-
-          const activityLogTableBody = document.getElementById('activityLogTableBody');
-          if (!logs || logs.length === 0) {
-            activityLogTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No activity logs found.</td></tr>';
-          } else {
-            activityLogTableBody.innerHTML = logs.map(log => `
-              <tr>
-                <td>${new Date(log.timestamp).toLocaleString()}</td>
-                <td>${log.user || ''}</td>
-                <td>${log.type || ''}</td>
-                <td>${log.description || ''}</td>
-                <td>${log.status || ''}</td>
-              </tr>
-            `).join('');
-          }
-        } catch (error) {
-          console.error('Error rendering activity logs:', error);
-          alert('Error loading activity logs. Please try again.');
         }
       }
 
