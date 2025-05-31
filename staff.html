@@ -279,6 +279,10 @@
         text-align: center;
       }
 
+      .done-btn:hover {
+        background: #096464 !important;
+      }
+
       /* Inventory Section Styles */
       .inventory-section {
         padding: var(--spacing-large);
@@ -325,7 +329,11 @@
   </head>
   <body>
     <aside class="sidebar">
-      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiM0Q0FGNTAiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5QZXQgU2Fsb248L3RleHQ+PC9zdmc+" alt="Pet Grooming Salon Logo" class="logo" />
+      <img
+        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiM0Q0FGNTAiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5QZXQgU2Fsb248L3RleHQ+PC9zdmc+"
+        alt="Pet Grooming Salon Logo"
+        class="logo"
+      />
       <nav>
         <ul>
           <li class="nav-item active" data-section="profile">Profile</li>
@@ -371,10 +379,12 @@
       <!-- Inventory Section -->
       <section id="inventory" class="section inventory-section">
         <h1 class="section-title">Inventory Overview</h1>
-        
+
         <div class="inventory-container">
           <table aria-describedby="inventoryTableDesc">
-            <caption id="inventoryTableDesc">Current Stock Levels</caption>
+            <caption id="inventoryTableDesc">
+              Current Stock Levels
+            </caption>
             <thead>
               <tr>
                 <th>Item Name</th>
@@ -408,6 +418,7 @@
               <th>Service</th>
               <th>Amount</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody id="transactionTableBody">
@@ -709,6 +720,15 @@
         }
       }
 
+      async function markAsDone(id) {
+        const { data, error } = await supabase
+          .from("newAppointments")
+          .update({ status: "Complete" })
+          .eq("id", id);
+
+        window.location.reload();
+      }
+
       // Function to render Transactions
       async function loadTransactions() {
         try {
@@ -726,6 +746,9 @@
           );
           const cancelledAppointments = appointments.filter(
             (appt) => appt.status === "Cancelled"
+          );
+          const scheduledAppointments = appointments.filter(
+            (appt) => appt.status === "Scheduled"
           );
 
           if (error) {
@@ -753,9 +776,12 @@
             return;
           }
 
-          transactionTableBody.innerHTML = pendingAppointments
-            .map((appt) => {
-              return `
+          transactionTableBody.innerHTML =
+            pendingAppointments.length === 0
+              ? `<div>No pending appointments yet.</div>`
+              : pendingAppointments
+                  .map((appt) => {
+                    return `
                   <tr>
                       <td data-label="Date">${
                         appt.appointmentDate
@@ -786,10 +812,15 @@
                         appt.price ? appt.price.toFixed(2) : "0.00"
                       }</td>
                       <td data-label="Status">${appt.status || "N/A"}</td>
+                      <td data-label="Status">
+                        <button class="done-btn" onclick="markAsDone(${
+                          appt.id
+                        })">Mark as Done</button>
+                      </td>
                   </tr>
               `;
-            })
-            .join("");
+                  })
+                  .join("");
           transactionTableBodyCompleted.innerHTML = completeAppointments
             .map((appt) => {
               return `
@@ -880,39 +911,45 @@
       async function loadInventory() {
         try {
           const { data: inventory, error } = await supabase
-            .from('inventory')
-            .select('*')
-            .order('item_name', { ascending: true });
+            .from("inventory")
+            .select("*")
+            .order("item_name", { ascending: true });
 
           if (error) {
             throw error;
           }
 
-          const inventoryTableBody = document.getElementById('inventoryTableBody');
-          
+          const inventoryTableBody =
+            document.getElementById("inventoryTableBody");
+
           if (!inventory || inventory.length === 0) {
-            inventoryTableBody.innerHTML = '<tr><td colspan="3" class="center-text">No inventory items found.</td></tr>';
+            inventoryTableBody.innerHTML =
+              '<tr><td colspan="3" class="center-text">No inventory items found.</td></tr>';
             return;
           }
 
-          inventoryTableBody.innerHTML = inventory.map(item => {
-            const status = item.quantity <= 5 ? 'Low Stock' : 'In Stock';
-            const statusClass = item.quantity <= 5 ? 'status-low' : 'status-ok';
-            
-            return `
+          inventoryTableBody.innerHTML = inventory
+            .map((item) => {
+              const status = item.quantity <= 5 ? "Low Stock" : "In Stock";
+              const statusClass =
+                item.quantity <= 5 ? "status-low" : "status-ok";
+
+              return `
               <tr>
-                <td>${item.item_name || 'N/A'}</td>
+                <td>${item.item_name || "N/A"}</td>
                 <td>${item.quantity || 0}</td>
                 <td class="${statusClass}">${status}</td>
               </tr>
             `;
-          }).join('');
-
+            })
+            .join("");
         } catch (error) {
-          console.error('Error loading inventory:', error);
-          const inventoryTableBody = document.getElementById('inventoryTableBody');
+          console.error("Error loading inventory:", error);
+          const inventoryTableBody =
+            document.getElementById("inventoryTableBody");
           if (inventoryTableBody) {
-            inventoryTableBody.innerHTML = '<tr><td colspan="3" class="center-text">Error loading inventory. Please try again.</td></tr>';
+            inventoryTableBody.innerHTML =
+              '<tr><td colspan="3" class="center-text">Error loading inventory. Please try again.</td></tr>';
           }
         }
       }
